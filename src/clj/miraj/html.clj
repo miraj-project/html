@@ -3,7 +3,7 @@
   (:require [miraj.markup :refer [make-tag-fns make-void-elt-fns]]))
             ;; [clojure.tools.logging :as log :only [trace debug error info]]))
 
-(println "loading")
+;; (println "loading miraj.html")
 
             ;;[clojure.data.xml :as xml]
             ;; [clojure.tools.logging :as log :only [trace debug error info]]
