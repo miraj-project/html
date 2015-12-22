@@ -8,7 +8,7 @@
 
 (ns miraj.html
   (:refer-clojure :exclude [map meta time])
-  (:require [miraj.markup :refer [make-tag-fns make-void-elt-fns]]
+  (:require [miraj.markup :refer :all]
             [clojure.string :as str]))
             ;; [clojure.tools.logging :as log :only [trace debug error info]]))
 
