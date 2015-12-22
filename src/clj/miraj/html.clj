@@ -1,6 +1,15 @@
+;   Copyright (c) Gregg Reynolds. All rights reserved.
+;   The use and distribution terms for this software are covered by the
+;   Eclipse Public License 1.0 (http://opensource.org/licenses/eclipse-1.0.php)
+;   which can be found in the file epl-v10.html at the root of this distribution.
+;   By using this software in any fashion, you are agreeing to be bound by
+;   the terms of this license.
+;   You must not remove this notice, or any other, from this software.
+
 (ns miraj.html
   (:refer-clojure :exclude [map meta time])
-  (:require [miraj.markup :refer [make-tag-fns make-void-elt-fns]]))
+  (:require [miraj.markup :refer [make-tag-fns make-void-elt-fns]]
+            [clojure.string :as str]))
             ;; [clojure.tools.logging :as log :only [trace debug error info]]))
 
 ;; (println "loading miraj.html")
@@ -271,6 +280,125 @@
   ;; match <li>, <li >, <li/>, <li />, <li foo="bar">, <li foo="bar">
   #" +[^>]* */?>")
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;  ATTRIBS
+
+(def attrs-regex
+  #" *[^>]* *>")
+
+(def attrs-overlap-start-regex
+  ;; e.g. for a, b, em, i, li etc
+  ;; match <li>, <li >, <li/>, <li />
+  #" */?>")
+
+(def attrs-overlap-attrs-regex
+  ;; e.g. for a, b, em, i, li etc
+  ;; match <li>, <li >, <li/>, <li />, <li foo="bar">, <li foo="bar">
+  #" +[^>]* */?>")
+
+(def encoding-decl-regex
+  ;; https://encoding.spec.whatwg.org/#names-and-labels
+  [#"(?i)unicode-1-1-utf-8"
+   #"(?i)utf-8"
+   #"(?i)utf8"])
+
+;; global attrs: http://www.w3.org/html/wg/drafts/html/master/dom.html#global-attributes
+;; meta standard names: :application-name, :author, :description, :generator, :keywords
+;; :charset;  :itemprop?
+;; extensions: https://wiki.whatwg.org/wiki/MetaExtensions
+;; see https://gist.github.com/kevinSuttle/1997924
+;; :viewport gets special treatment
+;; e.g.  :dc {:created ".." :creator "foo" ...}
+
+
+;; syntax:
+;;    keyword values represent type constraints by name
+;;    sets represent enum types
+;;    vectors map clj value to html value, e.g. [true "yes"]
+;;    quoted vals represent type, plus translate to <link> instead of <meta>
+
+(def mobile-meta-tags
+  {:mobile {:agent ^:compound {:format #{:wml :xhtml :html5}
+                               :url :_}
+            :web-app-capable [true "yes"]}})
+
+(def apple-meta-tags
+  ;; https://developer.apple.com/library/safari/documentation/AppleApplications/Reference/SafariHTMLRef/Articles/MetaTags.html
+  {:apple {:itunes-app :_
+           :mobile-web-app {:capable [true "yes"]
+                            :status-bar-style #{:default :black :black-translucent}
+                            :title :string}
+           :touch {:icon 'icon  ;; meaning type is icon, generate <link"
+                   :startup-image 'image
+                   ;; apple-touch-fullscreen :_ ;; "not needed anymore"
+           :format-detection {:disable "telephone=no"}}}})
+
+(def ms-meta-tags
+  {:msapplication {:config :uri
+                   :navbutton-color :color
+                   :notification [:uri]
+                   :square-70x70-logo :uri
+                   :square-150x150-logo :uri
+                   :square-310x310-logo :uri
+                   :starturl :uri
+                   :task {:name :string :action-uri :uri :icon-uri :uri
+                          :window-type #{:tab :self :window}}
+                   :tile-color :color
+                   :tile-image :uri
+                   :tooltip :string
+                   :tap-highlight :no
+                   :wide-310x150-logo :uri
+                   :window {:width :pixels, :height :pixels}
+                   ;; other ms metas https://msdn.microsoft.com/library/dn255024(v=vs.85).aspx
+                   :ms-pinned ^:nonstandard {:allow-domain-api-calls :bool
+                                             :allow-domain-meta-tags :bool
+                                             :badge {:frequency #{30 60 360 720 1440}
+                                                     :polling-uri :uri}
+                                             :start-url :uri
+                                             :task-separator :_}}})
+
+(def twitter-meta-tags
+  )
+
+(def html5-meta-attribs-standard
+  {:charset :encoding-decl   ;; :content is implicit as value of map entry
+   ;; standard vals for name attrib
+   :application-name :string
+   :author :string
+   :description :string
+   :generator :string
+   :keywords :tokens})
+
+(def html5-meta-attribs-extended
+   ;; extended name attribs https://wiki.whatwg.org/wiki/MetaExtensions
+  {:viewport  {:width :pixels
+                 :height :pixels
+                 :initial-scale :number
+                 :minimum-scale :number
+                 :maximum-scale :number
+                 :user-scalable #{:zoom :fixed}}
+   ;; dublin core
+   :dc {:created :_, :creator :_} ;; etc.
+   :dc-terms {:created :_, :creator :_} ;; etc.
+   :fragment "!"
+   :geo {:position :geocoord, :country :iso3166-1} ;; etc.
+   :referrer #{:no-referrer :no-referrer-when-downgrade
+               :origin :origin-when-cross-origin
+               :unsafe-url}
+   :revision :_
+   :theme-color :color
+   :twitter {:card :_
+             :domain :_
+             :url :_
+             :title :_
+             :description :_
+             ;; etc.
+             }})
+
+(def html5-meta-attribs
+  (merge {} html5-meta-attribs-standard html5-meta-attribs-extended
+         apple-meta-tags ms-meta-tags))
+
 (def html5-tags
   (distinct
    (sort
@@ -281,12 +409,116 @@
 (defn list-tags
   []
   (let [content-tags (remove (set html5-void-elt-tags) html5-tags)]
-    (println "ALL TAGS: " html5-tags)
-    (println "CONTENT TAGS: " content-tags)
+    ;; (println "ALL TAGS: " html5-tags)
+    ;; (println "CONTENT TAGS: " content-tags)
     (doseq [tag html5-tags]
       (println tag))))
 
 (make-tag-fns nil (remove (set html5-void-elt-tags) html5-tags) nil)
 
 (make-void-elt-fns html5-void-elt-tags)
+
+(defn apply-meta-rule
+  [tag key val ruleset]
+  (log/trace (str "APPLY META RULE: " tag " | " key " | " val " | " ruleset))
+  (let [this-tag (subs (str key) 1)]
+    (for [[k v] val]
+      (do (log/trace "key: " k ", val: " val)
+          (if-let [rule (get ruleset k)]
+            (let [k-tag (subs (str k) 1)]
+              (log/trace "rule: " rule)
+              (cond
+                (keyword? rule)
+                (do (log/trace "meta keyword rule: " k ", " val ": " rule)
+                    (let [val-param (get val k)
+                          elt (condp = rule
+                                :string (meta {:name (str tag this-tag "-" k-tag)
+                                                 :content (str val-param)})
+                                :number (meta {:name (str tag this-tag "-" k-tag)
+                                                 :content (str val-param)})
+                                :color (meta {:name (str tag this-tag "-" k-tag)
+                                                :content (str val-param)})
+                                :uri (meta {:name (str tag this-tag "-" k-tag)
+                                              :content (str val-param)})
+                                :_ (meta {:name (str tag this-tag "-" k-tag)
+                                            :content (str val-param)})
+                                ;; :tokens
+                                )]
+                      (log/trace "elt: " elt)
+                      elt))
+
+                (map? rule) (do ;;(println "meta map key: " k)
+                              ;;(println "meta map val: " (get val k))
+                                (if (:compound (clojure.core/meta rule))
+                                  (let [nm (str tag this-tag "-" k-tag)
+                                        content (str/join
+                                                       "; " (for [[k v] (get val k)]
+                                                             (str (subs (str k) 1)
+                                                                  "="
+                                                                  (if (keyword? v)
+                                                                    (subs (str v) 1)
+                                                                    (str v)))))]
+                                    (meta {:name nm :content content}))
+                                (apply-meta-rule (str this-tag "-") k (get val k) rule)))
+
+                (set? rule)
+                (do (log/trace "meta set rule: " k rule)
+                    (let [val-param (get val k)]
+                      (log/trace "val: " val-param)
+                      (if (contains? rule val-param)
+                        (let [nm (str tag this-tag "-" k-tag)
+                              content (subs (str val-param) 1)]
+                          (meta {:name nm :content content}))
+                        (throw (Exception. (str "META: unrecognized enum option: "
+                                                key " {" k " " v"}"))))))
+
+                (vector? rule)
+                (do (log/trace "meta vector rule: " k ", " val ": " rule)
+                    (let [v (val k)]
+                      (log/trace "found val: " v)
+                      (if (= v (first rule))
+                        (let [nm (str tag this-tag "-" k-tag)
+                              content (second rule)]
+                          (log/trace nm  "=\"" content "\"")
+                          (meta {:name nm :content content}))
+                        (throw (Exception. (str "META: unrecognized option: " key " {" k " " v"}"))))))
+                :else (throw (Exception.
+                              (str "META: unrecognized option type: "
+                                   key " {" k " " v"}" (type rule)))))))))))
+
+(defn get-metas
+  [metas]
+  (log/trace "GET-METAS " metas)
+  ;; (log/trace "HTML5-METAS " (keys h/html5-meta-attribs))
+  (let [ms (for [[tag val] metas]
+             (let [rule (get html5-meta-attribs tag)]
+               (log/trace "META: " tag val rule)
+               (if (nil? rule) (throw (Exception. (str "unknown meta name: " (str tag)))))
+               (case tag
+                 ;; :description	(h/meta {:name "description" :content val})
+                 ;; :title		(h/meta {:name "description" :content val})
+                 ;; :application-name	(h/meta {:name "description" :content val})
+                 :apple (let [apple (apply-meta-rule "" tag val rule)]
+                          (log/trace "APPLE: " apple) apple)
+                 :msapplication (let [ms (apply-meta-rule "msapplication" tag val rule)]
+                                  (log/trace "MSAPP: " ms) ms)
+                 :mobile (let [ms (apply-meta-rule "" tag val rule)]
+                           (log/trace "MOBILE: " ms) ms)
+                 ;; :theme-color	(h/meta {:name "description" :content val})
+                 ;; :foo	(h/meta {:name "foo" :content val})
+                 ;; :bar	(h/meta {:name "bar" :content val})
+                 ;; :baz	(h/meta {:name "baz" :content val})
+                 (meta {:name (subs (str tag) 1)
+                          :content (str val)}))))]
+    (log/trace "Metas: " ms)
+    ms))
+
+(defn platform
+  [{:keys [apple ms mobile]}]
+  ;; (println "apple: " apple)
+  ;; (println "ms: " ms)
+  ;; (println "mobile: " mobile)
+  (merge (apply-meta-rule "" :apple apple (:apple apple-meta-tags))
+         (apply-meta-rule "" :msapplication ms (:msapplication ms-meta-tags))
+         (apply-meta-rule "" :mobile mobile (:mobile mobile-meta-tags))))
 
