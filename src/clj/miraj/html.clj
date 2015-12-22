@@ -517,11 +517,11 @@
                  ;; :title		(h/meta {:name "description" :content val})
                  ;; :application-name	(h/meta {:name "description" :content val})
                  :apple (let [apple (apply-meta-rule "" tag val rule)]
-                          ;;(log/trace "APPLE: " apple) apple)
+                          #_(log/trace "APPLE: " apple) apple)
                  :msapplication (let [ms (apply-meta-rule "msapplication" tag val rule)]
-                                  ;;(log/trace "MSAPP: " ms) ms)
+                                  #_(log/trace "MSAPP: " ms) ms)
                  :mobile (let [ms (apply-meta-rule "" tag val rule)]
-                           ;;(log/trace "MOBILE: " ms) ms)
+                           #_(log/trace "MOBILE: " ms) ms)
                  ;; :theme-color	(h/meta {:name "description" :content val})
                  ;; :foo	(h/meta {:name "foo" :content val})
                  ;; :bar	(h/meta {:name "bar" :content val})
