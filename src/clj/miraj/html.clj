@@ -438,16 +438,16 @@
 
 (defn apply-meta-rule
   [tag key val ruleset]
-  (log/trace (str "APPLY META RULE: " tag " | " key " | " val " | " ruleset))
+  ;; (log/trace (str "APPLY META RULE: " tag " | " key " | " val " | " ruleset))
   (let [this-tag (subs (str key) 1)]
     (for [[k v] val]
-      (do (log/trace "key: " k ", val: " val)
+      (do ;;(log/trace "key: " k ", val: " val)
           (if-let [rule (get ruleset k)]
             (let [k-tag (subs (str k) 1)]
-              (log/trace "rule: " rule)
+              ;;(log/trace "rule: " rule)
               (cond
                 (keyword? rule)
-                (do (log/trace "meta keyword rule: " k ", " val ": " rule)
+                (do ;;(log/trace "meta keyword rule: " k ", " val ": " rule)
                     (let [val-param (get val k)
                           elt (condp = rule
                                 :string (meta {:name (str tag this-tag "-" k-tag)
@@ -462,7 +462,7 @@
                                             :content (str val-param)})
                                 ;; :tokens
                                 )]
-                      (log/trace "elt: " elt)
+                      ;;(log/trace "elt: " elt)
                       elt))
 
                 (map? rule) (do ;;(println "meta map key: " k)
@@ -480,9 +480,9 @@
                                 (apply-meta-rule (str this-tag "-") k (get val k) rule)))
 
                 (set? rule)
-                (do (log/trace "meta set rule: " k rule)
+                (do ;;(log/trace "meta set rule: " k rule)
                     (let [val-param (get val k)]
-                      (log/trace "val: " val-param)
+                      ;;(log/trace "val: " val-param)
                       (if (contains? rule val-param)
                         (let [nm (str tag this-tag "-" k-tag)
                               content (subs (str val-param) 1)]
@@ -491,13 +491,13 @@
                                                 key " {" k " " v"}"))))))
 
                 (vector? rule)
-                (do (log/trace "meta vector rule: " k ", " val ": " rule)
+                (do ;;(log/trace "meta vector rule: " k ", " val ": " rule)
                     (let [v (val k)]
-                      (log/trace "found val: " v)
+                      ;;(log/trace "found val: " v)
                       (if (= v (first rule))
                         (let [nm (str tag this-tag "-" k-tag)
                               content (second rule)]
-                          (log/trace nm  "=\"" content "\"")
+                          ;;(log/trace nm  "=\"" content "\"")
                           (meta {:name nm :content content}))
                         (throw (Exception. (str "META: unrecognized option: " key " {" k " " v"}"))))))
                 :else (throw (Exception.
@@ -506,29 +506,29 @@
 
 (defn get-metas
   [metas]
-  (log/trace "GET-METAS " metas)
+  ;; (log/trace "GET-METAS " metas)
   ;; (log/trace "HTML5-METAS " (keys h/html5-meta-attribs))
   (let [ms (for [[tag val] metas]
              (let [rule (get html5-meta-attribs tag)]
-               (log/trace "META: " tag val rule)
+               ;;(log/trace "META: " tag val rule)
                (if (nil? rule) (throw (Exception. (str "unknown meta name: " (str tag)))))
                (case tag
                  ;; :description	(h/meta {:name "description" :content val})
                  ;; :title		(h/meta {:name "description" :content val})
                  ;; :application-name	(h/meta {:name "description" :content val})
                  :apple (let [apple (apply-meta-rule "" tag val rule)]
-                          (log/trace "APPLE: " apple) apple)
+                          ;;(log/trace "APPLE: " apple) apple)
                  :msapplication (let [ms (apply-meta-rule "msapplication" tag val rule)]
-                                  (log/trace "MSAPP: " ms) ms)
+                                  ;;(log/trace "MSAPP: " ms) ms)
                  :mobile (let [ms (apply-meta-rule "" tag val rule)]
-                           (log/trace "MOBILE: " ms) ms)
+                           ;;(log/trace "MOBILE: " ms) ms)
                  ;; :theme-color	(h/meta {:name "description" :content val})
                  ;; :foo	(h/meta {:name "foo" :content val})
                  ;; :bar	(h/meta {:name "bar" :content val})
                  ;; :baz	(h/meta {:name "baz" :content val})
                  (meta {:name (subs (str tag) 1)
                           :content (str val)}))))]
-    (log/trace "Metas: " ms)
+    ;; (log/trace "Metas: " ms)
     ms))
 
 (defn platform
