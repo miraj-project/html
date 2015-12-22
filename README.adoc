@@ -1,7 +1,25 @@
 miraj.html
-----------
+==========
 
+miraj.html provides a convenience layer on top of
+link:https://github.com/mobileink/miraj.markup/tree/miraj[miraj.markup].
+It provides one Clojure function per HTML 5.1 element type.
 
-# Usage
+= usage
 
 link:http://clojars.org/miraj/html[image:http://clojars.org/miraj/html/latest-version.svg[]]
+
+[source,clojure]
+----
+;; foo/bar.clj
+(ns foo.bar
+  (:require [miraj.html :as h] ...)
+
+(def homepage (h/html (h/head ...)))
+(miraj.markup/serialize homepage)
+;; miraj.markup is a dependency of miraj.html
+----
+
+See
+link:https://github.com/mobileink/miraj.markup/tree/miraj[miraj.markup]
+for a more worked-out example.
