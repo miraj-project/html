@@ -7,9 +7,13 @@
 ;   You must not remove this notice, or any other, from this software.
 
 (ns miraj.html
-  (:refer-clojure :exclude [map meta time])
-  (:require [miraj.markup :refer :all]
+  (:refer-clojure :exclude [import map meta require time])
+  (:require [miraj.markup :as m]
+            [potemkin :refer [import-vars]]
             [clojure.string :as str]))
+
+(import-vars [miraj.markup import normalize optimize require])
+
             ;; [clojure.tools.logging :as log :only [trace debug error info]]))
 
 ;; (println "loading miraj.html")
@@ -430,11 +434,11 @@
    ;; :x-ua-compatible
    }])
 
-(make-meta-tag-fns html5-pragma-directives)
+(m/make-meta-tag-fns html5-pragma-directives)
 
-(make-tag-fns nil (remove (set html5-void-elt-tags) html5-tags) nil)
+(m/make-tag-fns nil (remove (set html5-void-elt-tags) html5-tags) nil)
 
-(make-void-elt-fns html5-void-elt-tags)
+(m/make-void-elt-fns html5-void-elt-tags)
 
 (defn apply-meta-rule
   [tag key val ruleset]
@@ -539,4 +543,3 @@
   (merge (apply-meta-rule "" :apple apple (:apple apple-meta-tags))
          (apply-meta-rule "" :msapplication ms (:msapplication ms-meta-tags))
          (apply-meta-rule "" :mobile mobile (:mobile mobile-meta-tags))))
-
