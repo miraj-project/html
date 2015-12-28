@@ -12,7 +12,7 @@
             [potemkin :refer [import-vars]]
             [clojure.string :as str]))
 
-(import-vars [miraj.markup import normalize optimize require])
+(import-vars [miraj.markup import normalize optimize pprint require])
 
             ;; [clojure.tools.logging :as log :only [trace debug error info]]))
 
