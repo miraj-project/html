@@ -6,7 +6,7 @@
             #_[clojure.data.xml :as x]))
 
 ;; (use 'miraj.markup :reload)
-;; (use 'scripts :reload)
+(use 'scripts :reload)
 ;; (use 'styles :reload)
 
 (h/pprint
@@ -96,7 +96,7 @@
    (h/import '(styles hello world)
              #_(html-imports hello world)
              #_(styles.shared foo bar)
-             '(scripts jquery))
+             '(scripts polyfill jquery))
    ;; (h/meta {:name "charset" :content "ascii"})
    (h/body
     (h/h1 "Hello Polymer!")
