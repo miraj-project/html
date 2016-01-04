@@ -1,48 +1,37 @@
+(println "loading html test")
 (ns test
-  (:require ;;[miraj.markup :refer :all :exclude [normalize]]
-            [miraj.html :as h]
-            [clojure.tools.namespace.repl :refer [refresh]]
-            ;; [polymer.paper]
+  (:require [miraj.html :as h]
+            ;; [clojure.tools.namespace.repl :refer [refresh]]
+            [polymer.paper :as paper]
             #_[clojure.data.xml :as x]))
 
-;; (use 'miraj.markup :reload)
-(use 'scripts :reload)
-;; (use 'styles :reload)
-
-(h/pprint
- (miraj.markup/normalize
-  (miraj.markup/optimize :js
-;;  (with-meta
-    (h/html
-     (h/require '[polymer.paper :as paper :refer [button]]
-                '[polymer.iron :as iron :refer [icon pages]])
-                ;; '[scripts :refer [jquery materialize]]
-                ;; '[styles  :refer [foo bar]])
-     (h/import #_(styles.shared.foo fooa foob)
-               '(styles.shared foo bar)
-               '(styles foo bar))
-     (h/body (h/h1 "hello")
-             (paper/button "foo")
-             (iron/list)
-             (iron/icon {:icon "menu"}))))))
+;;(use 'miraj.markup :reload)
+;;(use 'miraj.html :reload)
+;;(use 'polymer.paper :reload)
+;;(use 'scripts :reload)
+;;(use 'styles :reload)
+;;(use 'styles.shared :reload)
 
 (def homepage-html
   (h/html
    (h/head
     (h/script {:src "bower_components/webcomponentsjs/webcomponents-lite.js"})
-    (h/platform {:apple {:mobile-web-app {:capable true
-                                          :status-bar-style :black
-                                          :title "Hello"}}
-                 :ms {:navbutton-color "#FFCCAA"
-                      :tile-color "#3372DF"
-                      :tile-image "images/ms-touch-icon-144x144-precomposed.png"}
-                 :mobile {:agent {:format :html5
-                                  :url "http://example.org/"}
-                          :web-app-capable true}})
+    (h/meta-map
+     {:title "hello.primitives demo"
+      :description "this page demonstrates basic usage of miraj.html"
+      :platform {:apple {:mobile-web-app {:capable true
+                                                     :status-bar-style :black
+                                                     :title "Hello"}}
+                            :ms {:navbutton-color "#FFCCAA"
+                                 :tile-color "#3372DF"
+                                 :tile-image "images/ms-touch-icon-144x144-precomposed.png"}
+                            :mobile {:agent {:format :html5
+                                             :url "http://example.org/"}
+                                     :web-app-capable true}}})
     (h/link {:rel "stylesheet" :type "text/css" :href "styles/hello.css"})
+
     (h/link {:rel "import" :href "bower_components/paper-button/paper-button.html"})
-    (h/link {:rel "import" :href "bower_components/paper-card/paper-card.html"})
-    (h/script {:src "https://code.jquery.com/jquery-2.1.1.min.js"}))
+    (h/link {:rel "import" :href "bower_components/paper-card/paper-card.html"}))
 
    (h/body
     (h/h1 "Hello Polymer, with HTML primitives!")
@@ -52,30 +41,148 @@
                        (h/div {:class "card-actions"}
                               (paper/button {:raised nil} "Some action")))))))
 
+(h/pprint homepage-html)
+
+(h/pprint
+ (miraj.markup/optimize
+   (miraj.markup/normalize
+    (h/html
+     (h/import '(scripts jquery materialize)
+               '(styles foo bar materialize))
+     (h/body (h/h1 "hello")
+             (h/div "foo & bar")
+             (h/style "div < foo{color:red;} ")
+             (h/script "x < 7 & y > 3")
+             (h/span "bar"))))))
+
+;; (miraj.markup/co-compile
+;;  "foo.html"
+ (h/pprint
+  (miraj.markup/optimize
+   (miraj.markup/normalize
+    (with-meta
+      (h/html
+       (h/import '(scripts jquery materialize))
+       (h/body (h/h1 "hello")
+               (h/div "foo & baz")
+               (h/style "foo & bar")
+               (h/script "foo < bar & 2 > 1")
+               (h/div "foo & bar")))
+      {:title "My co-compile"
+       :description "desription here"
+       :platform {:apple {:mobile-web-app {:capable true
+                                           :status-bar-style :black
+                                           :title "Hello"}}
+                  :ms {:navbutton-color "#FFCCAA"
+                       :tile-color "#3372DF"
+                       :tile-image "images/ms-touch-icon-144x144-precomposed.png"}
+                  :mobile {:agent {:format :html5
+                                   :url "http://example.org/"}
+                           :web-app-capable true}}}))))
+   :pprint)
+
+
+(h/pprint (h/script "foo"))
+
+(h/pprint (h/script "blah " (+ 1 0) "<" (+ 1 2) " blahblah"))
+
+(h/pprint (h/style 3))
+(h/pprint (h/span (+ 1 3)))
+
+(h/serialize (miraj.markup/element :link {:rel :stylesheet}))
+
+(h/serialize (h/script {:class "a&b"} "a && b"))
+(h/pprint (h/script {:class "a&b"} "a && b"))
+
+(h/pprint (miraj.markup/element :span ::.a.b :a))
+
+(h/pprint (h/span ::.a.b :a " & " :b))
+(let [a "FOO"
+      b "Bar"]
+  (h/pprint (h/script ::.a.b a " & " b))
+  (h/pprint (h/script ::.a.b 'a " & " b))
+  (h/pprint (h/script ::.a.b :a " & " b))
+  (h/pprint (h/style ::.a.b ":a & :b")))
+
+(h/pprint (h/span '(1 2) :a))
+
+(h/pprint (h/span ::.a.b :a))
+(h/pprint (miraj.markup/element :span ::.a.b :a))
+
+(h/pprint (h/span ::.foo.bar))
+(h/pprint (miraj.markup/element :span ::.foo.bar))
+
+(h/pprint (h/span ::.foo.bar 'a))
+(h/pprint (miraj.markup/element :span ::.foo.bar 'a))
+
+(h/pprint (h/span ::.foo.bar :a))
+(h/pprint (miraj.markup/element :span ::.foo.bar :a))
+
+(h/pprint (h/span ::foo))
+(h/pprint (miraj.markup/element :span ::foo))
+
+(h/pprint (h/span ::foo.bar.baz))
+(h/pprint (miraj.markup/element :span ::foo.bar.baz))
+
+(h/pprint (miraj.markup/element :span ::.a.b :a))
+(h/pprint (h/span ::foo.a.b.c.d
+                  "sadf asdf" :boozle "asdf asdef"))
+
+
+(h/pprint
+ (miraj.markup/optimize
+  (miraj.markup/normalize
+    (h/html
+     (h/import '(scripts jquery materialize)
+               '(styles foo bar materialize))
+     (h/body
+      (h/div ::main.col.s12.m4
+             (for [x (range 1 3)]
+               (h/ul {:id (str "x" x) :class "foo"}
+                     (for [y (range 1 4)]
+                       (h/li (str x "." y)))))))))))
+
+
+(def homepage-html
+  (h/html
+   (h/head
+    (h/meta {:name "viewport" :content "width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1, user-scalable=yes"})
+    (h/meta-map {:platform {:apple {:mobile-web-app {:capable true
+                                                 :status-bar-style :black
+                                                 :title "Hello"}}
+                        :ms {:navbutton-color "#FFCCAA"
+                             :tile-color "#3372DF"
+                             :tile-image "images/ms-touch-icon-144x144-precomposed.png"}
+                        :mobile {:agent {:format :html5
+                                         :url "http://example.org/"}
+                                 :web-app-capable true}}})
+    (h/link {:rel "stylesheet" :type "text/css" :href "styles/hello.css"})
+    (h/script {:src "https://code.jquery.com/jquery-2.1.1.min.js"}))
+
+   (h/body
+    (h/h1 "Hello Miraj!")
+    (h/div {:id "cards"}
+           (h/div {:class "card" :heading "Card Title"}
+                       (h/div {:class "card-content"} "Some content")
+                       (h/div {:class "card-actions"}
+                              (h/button {:raised nil} "Some action")))))))
+
 ;;(def homepage
 ;;(println
-  (->> homepage-html
-       h/normalize
-       (h/optimize :js)
-       h/pprint)
+(->> homepage-html
+     h/normalize
+     (h/optimize :js)
+     h/pprint)
 
 (def home-meta
   ;;FIXME - no hardcoded values, always use indirection.
-  ;; e.g. not :tile-color "#3372DF" but :tile-color :foo
-  ;; ditto esp. for URIs
-  ;; for this we need a config namespace, just like for js and css resources
-  ;; for images, the schema will tell us which vals are supposed to be URIs,
-  ;; so we will then look up the kw in the images namespace.  ?
-  ;; ditto for colors - define a color namespace
-  ;; what about literals? we should already use indirection, for i18n
-  ;; or we could use a single meta namespace
   {:html-meta
    {:lang "en-us"
     :title "Demo webpage"
     :description "blah blah"
     :keywords "foo bar"
     :viewport {:width :device
-               :scale {:initial "1.0" :min "1.0"}
+               :scale {:initial 1.0 :min 1.0 :max 1}
                :user-scalable true}
     :platform {:apple {:mobile-web-app {:capable true
                                         :status-bar-style :black
@@ -93,7 +200,7 @@
   (h/html
    (h/require '[polymer.paper :as paper :refer [button card]]
               '[polymer.iron :as iron :refer [icon icons]])
-   (h/import '(styles hello world)
+   (h/import '(styles foo bar)
              #_(html-imports hello world)
              #_(styles.shared foo bar)
              '(scripts polyfill jquery))

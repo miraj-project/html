@@ -1,3 +1,4 @@
+;;(println "loading miraj.html")
 ;   Copyright (c) Gregg Reynolds. All rights reserved.
 ;   The use and distribution terms for this software are covered by the
 ;   Eclipse Public License 1.0 (http://opensource.org/licenses/eclipse-1.0.php)
@@ -12,7 +13,7 @@
             [potemkin :refer [import-vars]]
             [clojure.string :as str]))
 
-(import-vars [miraj.markup import normalize optimize pprint require serialize])
+(import-vars [miraj.markup import meta-map normalize optimize pprint require serialize])
 
             ;; [clojure.tools.logging :as log :only [trace debug error info]]))
 
@@ -243,6 +244,30 @@
 (def html5-rawtext-elts
   ["script" "style"])
 
+(def html5-pragma-directives
+  "meta http-equiv pragma directives
+  http://www.w3.org/html/wg/drafts/html/master/semantics.html#pragma-directives"
+  ["http-equiv"
+   ;; {fn-name [elt-tag <validation rule>]}
+  {:content-language ["content-language" {:non-conforming "Authors are
+  encouraged to use the lang attribute instead."}]
+   :content-type ["content-type" :encoding-decl]
+   :default-style ["default-style" :string]
+   :refresh ["refresh" :refresh-syntax]
+   :set-cookie ["set-cookie" {:non-conforming "Real HTTP headers should be used instead."}]
+   ;; HTML 5.1
+   :content-security-policy ["Content-Security-Policy" :string]
+   ;; :x-ua-compatible
+   }])
+
+
+(def html5-tags
+  (distinct
+   (sort
+    (concat html5-null-tags
+            html5-metadata-tags html5-heading-tags html5-sectioning-tags html5-block-tags
+            html5-phrasing-tags))))
+
 ;; http://www.w3.org/TR/html5/obsolete.html#non-conforming-features
 (def html5-obsolete-tags
   {:applet "Use embed or object instead."
@@ -277,3 +302,4 @@
 
 (m/make-void-elt-fns html5-void-elt-tags)
 
+;;(println "loaded miraj.html")
