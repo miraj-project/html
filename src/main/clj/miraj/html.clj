@@ -13,7 +13,7 @@
             [potemkin :refer [import-vars]]
             [clojure.string :as str]))
 
-(import-vars [miraj.markup import meta-map normalize optimize pprint require serialize])
+(import-vars [miraj.markup co-dom def-cotype import meta-map normalize optimize pprint require serialize])
 
             ;; [clojure.tools.logging :as log :only [trace debug error info]]))
 
