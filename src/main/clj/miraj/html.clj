@@ -1,4 +1,3 @@
-;;(println "loading miraj.html")
 ;   Copyright (c) Gregg Reynolds. All rights reserved.
 ;   The use and distribution terms for this software are covered by the
 ;   Eclipse Public License 1.0 (http://opensource.org/licenses/eclipse-1.0.php)
@@ -13,11 +12,11 @@
             [potemkin :refer [import-vars]]
             [clojure.string :as str]))
 
-(import-vars [miraj.markup co-dom def-cotype import meta-map normalize optimize pprint require serialize])
+;;(import-vars [miraj.markup <<! codom import meta-map normalize optimize pprint require serialize])
 
             ;; [clojure.tools.logging :as log :only [trace debug error info]]))
 
-;; (println "loading miraj.html")
+(println "loading miraj.html")
 
             ;;[clojure.data.xml :as xml]
             ;; [clojure.tools.logging :as log :only [trace debug error info]]
@@ -302,4 +301,4 @@
 
 (m/make-void-elt-fns html5-void-elt-tags)
 
-;;(println "loaded miraj.html")
+(println "loaded miraj.html")

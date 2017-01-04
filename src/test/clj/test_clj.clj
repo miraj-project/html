@@ -1,12 +1,143 @@
-(ns test
+(ns test-clj
   (:require [clojure.pprint :as pp]
+            [clj-time.core :as t]
+            [clojure.data.json :as json]
             [miraj.html :as h]
-            [Polymer :refer :all]
-            [Polymer.Behaviors]
-            [Polymer.Events]
-            [polymer.dom :as dom]
-            [polymer.platinum :as plat]
-            [polymer.platinum.service-worker :as sw]))
+            ;; [Miraj :refer :all]
+            [miraj.polymer.Behaviors]
+            [miraj.polymer.Events]
+            [miraj.polymer.dom :as dom]
+            ;; [miraj.paper :as paper]
+            ;;[miraj.platinum :as plat]
+            #_[miraj.platinum.service-worker :as sw]))
+
+(def home-html
+    (h/html
+     (h/require '[miraj.paper :as paper :refer [button card]]
+                '[miraj.iron :as iron :refer [icon icons]])
+     (h/import '(styles hello world)
+               '(scripts polyfill-lite-min))
+     (h/body
+      (h/h1 "Hello Miraj!")
+      (h/div #_(iron/icon {:icon "menu"}))
+      (h/div ::cards
+             (paper/card {:heading "Hello, you ol' Card!"}
+                         (h/div {:class "card-content"} "Some content")
+                         (h/div {:class "card-actions"}
+                                (paper/button {:raised nil} "Some action")))))))
+
+(paper/card)
+
+(println home-html)
+
+(h/pprint home-html)
+
+;; (remove-ns 'miraj.paper)
+
+(h/pprint
+(miraj.markup/def-codom greetings-dom
+  "greetings-codom docstring"
+  (h/require '[miraj.paper :as paper :refer [button card]]
+             '[miraj.iron :as iron :refer [icon icons]])
+  (h/import  '(styles.shared shared-styles))
+  (h/style ":host {display: block;}")
+  (h/h2 ::.page-title :greeting)
+  (h/span ::.paper-font-body2 "Update text to change the greeting.")
+  ;; Listens for "input" event and sets greeting to <input>.value
+  (paper/card {:heading "Hello, you ol' Card!"}
+                         (h/div {:class "card-content"} "Some content")
+                         (h/div {:class "card-actions"}
+                                (paper/button {:raised nil} "Some action")))
+  (h/input {:class "paper-font-body2" :value :input->greeting})))
+
+(meta (var greetings-dom))
+
+greetings-dom
+
+(h/pprint greetings-dom)
+
+(miraj.markup/defproperties AProps
+  ;; hostAttributes map
+  {:string-attribute "Value"
+   :boolean-attribute true
+   :tabindex 0}
+  (^Boolean president true :read-only)
+  (^Number x 0 (fn [new old] (+ new old)) :notify :reflect)
+  (^String lname "Lincoln" (fn [new old] (.log js/console
+                                               (str "Old pres: " old "; new: " new)))))
+
+(miraj.markup/defproperties BProps
+  "BProps docstring here"
+  (^Boolean bool-b true :read-only)
+  (^Number ^{:doc "number y docstring"} y 99)
+  (^String greeting "Hello Miraj!"))
+
+(h/pprint
+ (miraj.markup/<<!
+  (h/def-cotype my-greeting
+    "my-greeting custom component"
+    ;; (codom ...)
+    greetings-dom
+    ;; (properties
+    ;;  (^Boolean president true :read-only)
+    ;;  (^Number x 0 (fn [new old] (+ new old)) :notify :reflect)
+    ;;  (^String lname "Lincoln" (fn [new old] (.log js/console
+    ;;                                               (str "Old pres: " old "; new: " new)))))
+    AProps
+    (lname "Washington")
+    BProps
+
+    Polymer.This
+    ;; private
+    (_foo [] (.log js/console "FOO"))
+    ;; public
+    (bar [] (.log js/console "BAR"))
+
+    Polymer.Lifecycle
+    (created [] (.log js/console "CREATED"))
+    (attached [] (.log js/console "ATTACHED"))
+
+    Polymer.Events.Gesture
+    (with-element :special (tap [e] (.log js/console "you tapped the h1 element")))
+    (down [x] (do (.log js/console "DOWN")))
+
+    Polymer.Events.Mouse
+    (click [x] (.log js/console "CLICK"))
+    (dblclick [x] (.log js/console "DBLCLICK"))
+    (mouseover [x] (.log js/console "MOUSEOVER"))
+
+    Polymer.Behaviors.PaperButton
+    Polymer.Behaviors.PaperCheckedElement
+    )))
+
+(defprotocol GP
+  (^Bool foo [x] "FOO DOC")
+  (bar [x] [x y]))
+
+(pp/pprint GP)
+
+(h/pprint
+ (miraj.markup/<<!
+  (miraj.markup/def-cotype my-greeting
+    "my-greeting custom component"
+    greetings-local-dom
+    Greetings
+    (greeting "Hi there!" (fn [old new] "console.log('greeting changed from ' old ' to ' new '!')"))
+    (foo 9 :notify false)
+    Polymer.Lifecycle
+    (created [] "console.log('created ', this)")
+    Polymer.Behaviors.PaperButton
+    ;;(noink true) ;; => this.noink = true, in "create" handler?
+    (method1 (fn [x] (+ 2 x)))
+    )))
+
+(my-greeting)
+
+;; (miraj.markup/defpolymer my-foo
+;;   "my docstr"
+;;   (h/co-dom
+;;    (h/require '[polymer.paper :as paper :refer [button card]])
+;;    (h/p "hi world")))
 
 (h/pprint
  (h/co-dom 'foo.bar
@@ -56,34 +187,58 @@
 
 (meta (var Foobar))
 
-(:sigs Polymer/Mouse)
- 
+(miraj.markup/def-codom test-codom
+  "test-codom docstring")
 
-(miraj.markup/cljs-compile '(fn [a] (+ a 3)))
+;;(^Map amap {:a "b" 0 [:x]} :notify (fn [new old] (.log js/console "cljs here")))
 
-(miraj.markup/cljs-compile-str "{ :foo (fn [a] (+ a 3))}")
+;; (println (miraj.markup/props->cljs MyProps))
+
+;; (println (miraj.markup/compile-cljs MyProps))
+
+
+
+
+
+
+
+
+
+
+{:behaviors {Polymer.Behaviors/PaperButton ((noink true) (method1 (fn [x] (+ 2 x))))
+             Polymer.Behaviors/PaperCheckedElement ((noink true) (method1 (fn [x] (+ 2 x))))}
+ }
+
+(var my-greeting)
+
+(miraj.markup/coprotocol? 'Polymer/Lifecycle)
 
 (h/pprint
- (h/def-cotype my-greeting
-           "my-greeting custom component"
-           [^{:type String, :value "Welcome!", :notify true}
-            greeting]
-           (h/co-dom
-            (h/import  '(styles.shared shared-styles))
-            (h/style ":host {display: block;}")
-            (h/h2 ::.page-title :greeting)
-            (h/span ::.paper-font-body2 "Update text to change the greeting.")
-            ;; Listens for "input" event and sets greeting to <input>.value
-            (h/input {:class "paper-font-body2" :value :input->greeting}))
+ (miraj.markup/<<! my-greeting))
 
-           ;;Polymer.Lifecycle
-           #_(created (fn [] (.log js/console('created ', this))))))
+my-greeting
+(my-greeting)
+(fn? my-greeting)
+(var my-greeting)
+(-> (meta (var my-greeting))
+    :miraj
+    :co-ctor)
+
+(h/pprint
+ (miraj.markup/<<! my-greeting))
+
+    ;; Greetings
+    ;; (greeting [] {:value "Hi there!"} "console.log('greeting changed!')")
+    Polymer.Lifecycle
+    (created [] "console.log('created ', this)"))))
+
+(my-greeting)
 
 (h/pprint
  (h/def-cotype my-list
    "my-list docstring"
   [^{:type Array, :notify true} items]
-   (h/co-dom
+   (miraj.markup/codom
     (h/style ":host {display: block;}")
     (h/ul
      (h/template {:is "dom-repeat" :items :items}
@@ -94,7 +249,52 @@
                            'End-to-end Build Tooling (including Vulcanize)',
                            'Unit testing with Web Component Tester',
                            'Routing with Page.js',
-                           'Offline support with the Platinum Service Worker Elements'];")))
+                           'Offline support with the Platinum Service Worker Elements'];")
+   ;; ajax callbacks look just like any other event protocol method defns
+   Polymer.Http
+   (data ["url..."] {} "console.log('handling ajax result')")
+   (ajax-response ["https://www.googleapis.com/youtube/v3/search"]
+    {:get :json
+     :part "snippet" :q "polymer"
+     :auto nil})))
+; or: we parameterize the protocol, which contains only 3 events:
+Polymer.Ajax "https://www.googleapis.com/youtube/v3/search"
+{:get :json :part "snippet" :q "polymer" :auto nil}
+(response [:ajax-response] "console.log('ajax response received')")
+(request [:ajax-request] "console.log('ajax request sent')")
+(error [:ajax-error] "console.log('ajax error', ajax-error)")
+
+;; we can defn an ajax spec just like a protocol, parameterized:
+;; we have implicitly defprotocol Ajax, and defrequest extends this via parameterization
+(defrequest MyRequest  ;; = deftype? no
+  :indexes Http  ;; we could have other protocols, e.g. MQTT
+  "https://www.googleapis.com/youtube/v3/search"
+  {:get :json :part "snippet" :q "polymer" :auto nil})
+;; Here Ajax is a family of protocols, MyRequest's params index into it.
+;; defrequest looks like deftype with fields, but it isn't, it indexes into a family
+;; ie. its a higher-order protocol
+
+;; or:
+(def youtube-channel (cochan Http "https://www.googleapis.com/youtube/v3/search"))
+(def MyRequest (youtube-channel {:get :json :part "snippet" :q "polymer" :auto nil}))
+
+;; then we can use a let form:
+(h/let [ajax-reponse (h/observe MyRequest)]
+  (h/for [item (:items ajax-response)] ...))
+
+;; even better:
+(h/for [item (h/<! MyRequest)]
+  ...)
+
+;; completely inline:
+(h/for [item (h/<! (cochan Http "https://www.googleapis.com/youtube/v3/search"
+                                {:get :json :part "snippet" :q "polymer" :auto nil}))]
+  ...)
+
+
+;; with ajax we have 2 things: http resp event, and binding of result to a var
+;; so we split them out, using protocol defns for event obseration, and a let-form for binding
+;; we want data bindings to be in situ, but observers can be anywhere
 
 (h/pprint
 (h/def-cotype my-greeting
@@ -114,6 +314,8 @@
   Polymer.Events.Gesture
   (with-element :special (tap [] "console.log('you tapped the h1 element')"))
   (down [x] "console.log('DOWN'); console.log('AGAIN')")))
+
+(println (meta (var my-greeting)))
 
 (h/pprint
  (h/def-cotype foo-bar
@@ -149,6 +351,9 @@
             Polymer.Events.Gesture
             (with-element :special (tap [b] alert("you tapped the h1 element")))
             (down [x] console.log("DOWN")\; console.log("AGAIN"))))
+
+
+(meta (var foo-bar))
 
             ;; ;; Protocols
             ;; Polymer.Lifecycle
@@ -292,7 +497,7 @@
   (h/script "
     (function() {
       'use strict';
-  
+
       Polymer({
         is: 'my-list',
         properties: {

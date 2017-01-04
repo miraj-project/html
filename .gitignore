@@ -1,5 +1,8 @@
 dev-resources/
 
+.repl*
+*log
+*cljX
 *html
 
 TODO.txt

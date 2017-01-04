@@ -13,3 +13,11 @@
             :media "(min-width: 700px) and (orientation: landscape)"})
 
 (def materialize {:uri "bower_components/Materialize/dist/css/materialize.min.css"})
+
+
+(def main {:uri "styles/main.css"
+            :media "(min-width: 700px) and (orientation: landscape)"})
+
+(def hello {:uri "styles/hello.css"})
+
+(def world {:uri "styles/world.css"})
