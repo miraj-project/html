@@ -10,13 +10,14 @@
 
  :checkouts '[[miraj/co-dom                  "0.1.0-SNAPSHOT"]
               [miraj/html                    "5.1.0-SNAPSHOT"]
-              [miraj/core                    "0.1.0-SNAPSHOT"]]
+;;              [miraj/core                    "0.1.0-SNAPSHOT"]
+              ]
 
  :dependencies '[[org.clojure/clojure        RELEASE]
                  [org.clojure/clojurescript  "1.7.228"]
                  [miraj/boot-miraj           "0.1.0-SNAPSHOT" :scope "test"]
 
-                 [miraj/core                 "0.1.0-SNAPSHOT"]
+;;                 [miraj/core                 "0.1.0-SNAPSHOT"]
                  [miraj/html                 "5.1.0-SNAPSHOT"]
                  [miraj/co-dom               "0.1.0-SNAPSHOT"]
                  ;; [miraj/polymer "1.2.3-SNAPSHOT"]
