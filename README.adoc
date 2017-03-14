@@ -2,7 +2,7 @@ miraj.html
 ==========
 
 miraj.html provides a convenience layer on top of
-link:https://github.com/mobileink/miraj.markup/tree/miraj[miraj.markup].
+link:https://github.com/mobileink/miraj.co-dom/tree/miraj[miraj.co-dom].
 It provides one Clojure function per HTML 5.1 element type.
 
 = usage
@@ -16,10 +16,69 @@ link:http://clojars.org/miraj/html[image:http://clojars.org/miraj/html/latest-ve
   (:require [miraj.html :as h] ...)
 
 (def homepage (h/html (h/head ...)))
-(miraj.markup/serialize homepage)
-;; miraj.markup is a dependency of miraj.html
+(miraj.co-dom/serialize homepage)
+;; miraj.co-dom is a dependency of miraj.html
 ----
 
 See
-link:https://github.com/mobileink/miraj.markup/tree/miraj[miraj.markup]
+link:https://github.com/mobileink/miraj.co-dom/tree/miraj[miraj.co-dom]
 for a more worked-out example.
+
+
+link:http://clojars.org/miraj.html/pragma[image:http://clojars.org/miraj.html/pragma/latest-version.svg[]]
+
+HTML Pragma directives. See http://w3c.github.io/html/document-metadata.html#pragma-directives
+
+[source,clojure]
+----
+(ns pragma-test
+  (:require [miraj.html.pragma :as pragma]))
+
+(println (pragma/content-type "utf-8"))
+;;  #miraj.co-dom.Element{:tag meta, :attrs {:content utf-8, :http-equiv content-type}, :content ()}
+
+(println (miraj.co-dom/serialize :html
+                                 (pragma/content-type "utf-8")))
+;; <meta content="utf-8" http-equiv="content-type">
+
+(println (miraj.co-dom/serialize :html
+                                 (pragma/default-style "styles/default.css")))
+;; <meta content="styles/default.css" http-equiv="default-style">
+
+(println (miraj.co-dom/serialize :html
+                                 (pragma/refresh 300)))
+;; <meta content="300" http-equiv="refresh">
+
+(println (miraj.co-dom/serialize :html
+                                 (pragma/refresh "20; URL=page4.html")))
+;; <meta content="20; URL=page4.html" http-equiv="refresh">
+
+(println (miraj.co-dom/serialize :html
+                                 (pragma/content-security-policy "script-src 'self'; object-src 'none'")))
+;; <meta content="script-src 'self'; object-src 'none'" http-equiv="Content-Security-Policy">
+
+;; non-conforming - throw exceptions
+(miraj.co-dom/serialize :html
+ (pragma/content-language "en"))
+;; Exception http-equiv='content-language' is a non-conforming feature. Authors
+;; are encouraged to use the lang attribute instead.
+
+(miraj.co-dom/serialize :html
+ (pragma/set-cookie "en"))
+;; Exception http-equiv='set-cookie' is a non-conforming feature. Real HTTP
+;; headers should be used instead.
+----
+
+== functional html
+
+It's functions all the way down, so you can compose to your heart's content.
+
+
+== meta
+
+== void elements
+
+== boolean attributes
+
+== convenience operators
+
