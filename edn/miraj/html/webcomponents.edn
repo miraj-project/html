@@ -1,0 +1,772 @@
+;; complete list of html5 tags:
+;; https://www.w3.org/TR/html5/index.html#elements-1
+
+;; element types: https://www.w3.org/TR/html5/syntax.html#elements-0
+
+[#:miraj{:ns  miraj.html
+         :miraj/html true
+         :lib :html
+         :refer-clojure {:exclude [map meta time]}
+         :vendor polymer
+         :nss []
+         :base {:miraj/doc {:miraj/href "https://www.w3.org/TR/html5/"
+                            :miraj/short "HTML5 Element Functions"}}
+
+         :exports
+         [#:miraj{:defn a
+                  :html-tag :a
+                  :doc #:miraj{:short "Hyperlink."
+                               :href "text-level-semantics.html#the-a-element"}
+                  :implements HTMLAnchorElement
+                  :categories [:flow :phrasing :interactive]}
+
+          #:miraj{:defn abbr
+                  :html-tag :abbr
+                  :doc #:miraj{:short "Abbreviation."
+                               :href "text-level-semantics.html#the-abbr-element"}
+                  :implements HTMLElement
+                  :categories [:flow]}
+
+          #:miraj{:defn address :html-tag :address
+                  :doc #:miraj{:short "Contact information for a page or article element."
+                               :href "sections.html#the-address-element"}
+                  :implements HTMLElement
+                  :categories [:flow :phrasing]}
+
+          #:miraj{:defn area :html-tag :area
+                  :doc #:miraj{:short "Hyperlink or dead area on an image map."
+                               :href  "embedded-content-0.html#the-area-element"}
+                  :implements HTMLAreaElement
+                  :type :void
+                  :categories [:flow :phrasing]}
+
+          #:miraj{:defn article :html-tag :article
+                  :doc #:miraj{:short "Article. Self-contained syndicatable or reusable composition."
+                               :href  "sections.html#the-article-element"}
+                  :implements HTMLElement
+                  :categories [:flow :sectioning]}
+
+          #:miraj{:defn aside :html-tag :aside
+                  :doc #:miraj{:short "Sidebar for tangentially related content"
+                               :href  "sections.html#the-aside-element"}
+                  :implements HTMLElement
+                  :categories [:flow :sectioning]}
+
+          #:miraj{:defn audio :html-tag :audio
+                  :doc #:miraj{:short "Audio player"
+                               :href  "embedded-content-0.html#the-audio-element"}
+                  :implements HTMLAudioElement
+                  :categories [:flow :phrasing :embedded :interactive]}
+
+          #:miraj{:defn b :html-tag :b
+                  :doc #:miraj{:short "Keywords. The b element represents a span of text to which attention is being drawn for utilitarian purposes without conveying any extra importance and with no implication of an alternate voice or mood, such as key words in a document abstract, product names in a review, actionable words in interactive text-driven software, or an article lede."
+                               :href  "text-level-semantics.html#the-b-element"}
+                  :implements HTMLElement
+                  :categories [:flow :phrasing]}
+
+          #:miraj{:defn base :html-tag :base
+                  :doc #:miraj{:short "Base URL and default target browsing context for hyperlinks and forms"
+                               :href  "document-metadata.html#the-base-element"}
+                  :implements HTMLBaseElement
+                  :type :void
+                  :categories [:metadata]}
+
+          #:miraj{:defn bdi :html-tag :bdi
+                  :doc #:miraj{:short "Text directionality isolation. The bdi element represents a span of text that is to be isolated from its surroundings for the purposes of bidirectional text formatting. "
+                               :href  "text-level-semantics.html#the-bdi-element"}
+                  :implements HTMLElement
+                  :categories [:flow :phrasing]}
+
+          #:miraj{:defn bdo :html-tag :bdo
+                  :doc #:miraj{:short "BiDi Override: text directionality formatting. The bdo element represents explicit text directionality formatting control for its children. It allows authors to override the Unicode bidirectional algorithm by explicitly specifying a direction override."
+                               :href  "text-level-semantics.html#the-bdo-element"}
+                  :implements HTMLElement
+                  :categories [:flow :phrasing]}
+
+          #:miraj{:defn blockquote :html-tag :blockquote
+                  :doc #:miraj{:short "A section quoted from another source. The blockquote element represents content that is quoted from another source, optionally with a citation which must be within a footer or cite element, and optionally with in-line changes such as annotations and abbreviations. Content inside a blockquote other than citations and in-line changes must be quoted from another source, whose address, if it has one, may be cited in the cite attribute."
+                               :href  "grouping-content.html#the-blockquote-element"}
+                  :implements HTMLQuoteElement
+                  :categories [:flow :sectioning-root]}
+
+          #:miraj{:defn body :html-tag :body
+                  :doc #:miraj{:short "Document body."
+                               :href  "sections.html#the-body-element"}
+                  :implements HTMLBodyElement
+                  :categories [:sectioning-root]}
+
+          #:miraj{:defn br :html-tag :br
+                  :doc #:miraj{:short "Line break, e.g. in poem or postal address."
+                               :href  "text-level-semantics.html#the-br-element"}
+                  :implements HTMLBRElement
+                  :type :void
+                  :categories [:flow :phrasing]}
+
+          #:miraj{:defn button :html-tag :button
+                  :doc #:miraj{:short "Button control."
+                               :href  "forms.html#the-button-element"}
+                  :implements HTMLButtonElement
+                  :categories [:flow :phrasing :interactive :listed :labelable
+                               :submittable :reassociateable :form-associated]}
+
+          #:miraj{:defn canvas :html-tag :canvas
+                  :doc #:miraj{:short "Scriptable bitmap canvas."
+                               :href  "scripting-1.html#the-canvas-element"}
+                  :implements HTMLCanvasElement
+                  :categories [:flow]}
+
+          #:miraj{:defn caption :html-tag :caption
+                  :doc #:miraj{:short "Table caption."
+                               :href  "tabular-data.html#the-caption-element"}
+                  :implements HTMLTableCaptionElement
+                  :categories []}
+
+          #:miraj{:defn cite :html-tag :cite
+                  :doc #:miraj{:short "Title of a work."
+                               :href  "text-level-semantics.html#the-cite-element"}
+                  :implements HTMLElement
+                  :categories [:flow :phrasing]}
+
+          #:miraj{:defn code :html-tag :code
+                  :doc #:miraj{:short "Computer code."
+                               :href  "text-level-semantics.html#the-code-element"}
+                  :implements HTMLElement
+                  :categories [:flow :phrasing]}
+
+          #:miraj{:defn col :html-tag :col
+                  :doc #:miraj{:short "Table column."
+                               :href  "tabular-data.html#the-col-element"}
+                  :implements HTMLTableColElement
+                  :type :void
+                  :categories []}
+
+          #:miraj{:defn colgroup :html-tag :colgroup
+                  :doc #:miraj{:short "Group of columns in a table."
+                               :href  "tabular-data.html#the-colgroup-element"}
+                  :implements HTMLTableColElement
+                  :type :normal
+                  :categories []}
+
+          #:miraj{:defn data :html-tag :data
+                  :doc #:miraj{:short "Machine-readable equivalent. The data element represents its contents, along with a machine-readable form of those contents in the value attribute. The value attribute must be present. Its value must be a representation of the element's contents in a machine-readable format."
+                               :href  "text-level-semantics.html#the-data-element"}
+                  :implements HTMLDataElement
+                  :categories [:flow :phrasing]}
+
+          #:miraj{:defn datalist :html-tag :datalist
+                  :doc #:miraj{:short "Container for options for combo box control."
+                               :href  "forms.html#the-datalist-element"}
+                  :implements HTMLDataListElement
+                  :categories [:flow :phrasing]}
+
+          #:miraj{:defn dd :html-tag :dd
+                  :doc #:miraj{:short "Content for corresponding dt element(s). The dd element represents the description, definition, or value, part of a term-description group in a description list (dl element)."
+                               :href  "grouping-content.html#the-dd-element"}
+                  :implements HTMLElement
+                  :categories []}
+
+          #:miraj{:defn del :html-tag :del
+                  :doc #:miraj{:short "A removal from the document"
+                               :href  "edits.html#the-del-element"}
+                  :implements HTMLModElement
+                  :categories [:flow :phrasing]}
+
+          #:miraj{:defn dfn :html-tag :dfn
+                  :doc #:miraj{:short "Defining instance."
+                               :href  "text-level-semantics.html#the-dfn-element"}
+                  :implements HTMLElement
+                  :categories [:flow :phrasing]}
+
+          #:miraj{:defn div :html-tag :div
+                  :doc #:miraj{:short "Generic flow container."
+                               :href  "grouping-content.html#the-div-element"}
+                  :implements HTMLDivElement
+                  :categories [:flow]}
+
+          #:miraj{:defn dl :html-tag :dl
+                  :doc #:miraj{:short "Association list consisting of zero or more name-value groups."
+                               :href  "grouping-content.html#the-dl-element"}
+                  :implements HTMLDListElement
+                  :categories [:flow]}
+
+          #:miraj{:defn dt :html-tag :dt
+                  :doc #:miraj{:short "Legend for corresponding dd element(s)."
+                               :href  "grouping-content.html#the-dt-element"}
+                  :implements HTMLElement
+                  :categories []}
+
+          #:miraj{:defn em :html-tag :em
+                  :doc #:miraj{:short "Stress emphasis."
+                               :href  "text-level-semantics.html#the-em-element"}
+                  :implements HTMLElement
+                  :categories [:flow :phrasing]}
+
+          #:miraj{:defn embed :html-tag :embed
+                  :doc #:miraj{:short "Plugin. The embed element provides an integration point for an external (typically non-HTML) application or interactive content. The src attribute gives the address of the resource being embedded. The attribute, if present, must contain a valid non-empty URL potentially surrounded by spaces."
+                               :href  "embedded-content-0.html#the-embed-element"}
+                  :implements HTMLElement
+                  :type :void
+                  :categories [:flow :phrasing :embedded :interactive]}
+
+
+          #:miraj{:defn fieldset :html-tag :fieldset
+                  :doc #:miraj{:short "Group of form controls."
+                               :href  "forms.html#the-fieldset-element"}
+                  :implements HTMLFieldSetElement
+                  :categories [:flow :sectioning-root :listed :reassociateable :form-associated]}
+
+          #:miraj{:defn figcaption :html-tag :figcaption
+                  :doc #:miraj{:short "Caption for figure."
+                               :href  "grouping-content.html#the-figcaption-element"}
+                  :implements HTMLElement
+                  :categories []}
+
+          #:miraj{:defn figure :html-tag :figure
+                  :doc #:miraj{:short "Figure with optional caption."
+                               :href  "grouping-content.html#the-figure-element"}
+                  :implements HTMLElement
+                  :categories [:flow :sectioning-root]}
+
+          #:miraj{:defn footer :html-tag :footer
+                  :doc #:miraj{:short "Footer for a page or section."
+                               :href  "sections.html#the-footer-element"}
+                  :implements HTMLElement
+                  :categories [:flow]}
+
+          #:miraj{:defn form :html-tag :form
+                  :doc #:miraj{:short "User-submittable form"
+                               :href  "forms.html#the-form-element"}
+                  :implements HTMLFormElement
+                  :categories [:flow]}
+
+          #:miraj{:defn h1 :html-tag :h1
+                  :doc #:miraj{:short "Section heading."
+                               :href  "sections.html#the-h1,-h2,-h3,-h4,-h5,-and-h6-elements"}
+                  :implements HTMLHeadingElement
+                  :categories [:flow :heading]}
+
+          #:miraj{:defn h2 :html-tag :h2
+                  :doc #:miraj{:short "Section heading."
+                               :href  "sections.html#the-h1,-h2,-h3,-h4,-h5,-and-h6-elements"}
+                  :implements HTMLHeadingElement
+                  :categories [:flow :heading]}
+
+          #:miraj{:defn h3 :html-tag :h3
+                  :doc #:miraj{:short "Section heading."
+                               :href  "sections.html#the-h1,-h2,-h3,-h4,-h5,-and-h6-elements"}
+                  :implements HTMLHeadingElement
+                  :categories [:flow :heading]}
+
+          #:miraj{:defn h4 :html-tag :h4
+                  :doc #:miraj{:short "Section heading."
+                               :href  "sections.html#the-h1,-h2,-h3,-h4,-h5,-and-h6-elements"}
+                  :implements HTMLHeadingElement
+                  :categories [:flow :heading]}
+
+          #:miraj{:defn h5 :html-tag :h5
+                  :doc #:miraj{:short "Section heading."
+                               :href  "sections.html#the-h1,-h2,-h3,-h4,-h5,-and-h6-elements"}
+                  :implements HTMLHeadingElement
+                  :categories [:flow :heading]}
+
+          #:miraj{:defn h6 :html-tag :h6
+                  :doc #:miraj{:short "Section heading."
+                               :href  "sections.html#the-h1,-h2,-h3,-h4,-h5,-and-h6-elements"}
+                  :implements HTMLHeadingElement
+                  :categories [:flow :heading]}
+
+          #:miraj{:defn head :html-tag :head
+                  :doc #:miraj{:short "Container for document metadata."
+                               :href  "document-metadata.html#the-head-element"}
+                  :implements HTMLHeadElement
+                  :categories []}
+
+          #:miraj{:defn header :html-tag :header
+                  :doc #:miraj{:short "Introductory or navigational aids for a page or section."
+                               :href  "sections.html#the-header-element"}
+                  :implements HTMLElement
+                  :categories [:flow]}
+
+          #:miraj{:defn hr :html-tag :hr
+                  :doc #:miraj{:short "Thematic break. The hr element represents a paragraph-level thematic break, e.g. a scene change in a story, or a transition to another topic within a section of a reference book."
+                               :href  "grouping-content.html#the-hr-element"}
+                  :implements HTMLHRElement
+                  :type :void
+                  :categories [:flow]}
+
+          #:miraj{:defn html :html-tag :html
+                  :doc #:miraj{:short "Root element."
+                               :href  "semantics.html#the-html-element"}
+                  :implements HTMLHtmlElement
+                  :categories [:flow]}
+
+          #:miraj{:defn i :html-tag :i
+                  :doc #:miraj{:short "Alternate voice. The i element represents a span of text in an alternate voice or mood, or otherwise offset from the normal prose in a manner indicating a different quality of text, such as a taxonomic designation, a technical term, an idiomatic phrase from another language, transliteration, a thought, or a ship name in Western texts."
+                               :href  "text-level-semantics.html#the-i-element"}
+                  :implements HTMLElement
+                  :categories [:flow :phrasing]}
+
+          #:miraj{:defn iframe :html-tag :iframe
+                  :doc #:miraj{:short "Nested browsing context."
+                               :href  "embedded-content-0.html#the-iframe-element"}
+                  :implements HTMLIFrameElement
+                  :categories [:flow :phrasing :embedded :interactive]}
+
+          #:miraj{:defn img :html-tag :img
+                  :doc #:miraj{:short "Image."
+                               :href  "embedded-content-0.html#the-img-element"}
+                  :implements HTMLImageElement
+                  :type :void
+                  :categories [:flow :phrasing :embedded :interactive :form-associated]}
+
+          #:miraj{:defn input :html-tag :input
+                  :doc #:miraj{:short "Form control."
+                               :href  "forms.html#the-input-element"}
+                  :implements HTMLInputElement
+                  :type :void
+                  :categories [:flow :phrasing :interactive :listed :labelable
+                               :submittable :resettable :reassociateable :form-associated]}
+
+          #:miraj{:defn ins :html-tag :ins
+                  :doc #:miraj{:short "An addition to the document."
+                               :href  "edits.html#the-ins-element"}
+                  :implements HTMLModElement
+                  :categories [:flow :phrasing]}
+
+          #:miraj{:defn kbd :html-tag :kbd
+                  :doc #:miraj{:short "User input"
+                               :href  "text-level-semantics.html#the-kbd-element"}
+                  :implements HTMLElement
+                  :categories [:flow :phrasing]}
+
+          #:miraj{:defn keygen :html-tag :keygen
+                  :doc #:miraj{:short "Cryptographic key-pair generator form control. The keygen element represents a key pair generator control. When the control's form is submitted, the private key is stored in the local keystore, and the public key is packaged and sent to the server."
+                               :href  "forms.html#the-keygen-element"}
+                  :implements HTMLKeyGenElement
+                  :type :void
+                  :categories [:flow :phrasing :interactive :listed :labelable
+                               :submittable :resettable :reassociateable  :form-associated]}
+
+          #:miraj{:defn label :html-tag :label
+                  :doc #:miraj{:short "Caption for a form control."
+                               :href  "forms.html#the-label-element"}
+                  :implements HTMLLabelElement
+                  :categories [:flow :phrasing :interactive :reassociateable :form-associated]}
+
+          #:miraj{:defn legend :html-tag :legend
+                  :doc #:miraj{:short "Caption for a fieldset."
+                               :href  "forms.html#the-legend-element"}
+                  :implements HTMLLegendElement
+                  :categories []}
+
+          #:miraj{:defn li :html-tag :li
+                  :doc #:miraj{:short "List item."
+                               :href  "grouping-content.html#the-li-element"}
+                  :implements HTMLLIElement
+                  :categories []}
+
+          #:miraj{:defn link :html-tag :link
+                  :doc #:miraj{:short "Link metadata."
+                               :href  "document-metadata.html#the-link-element"}
+                  :implements HTMLLinkElement
+                  :type :void
+                  :categories [:metadata :flow :phrasing]}
+
+
+          #:miraj{:defn main :html-tag :main
+                  :doc #:miraj{:short "Main content of a document."
+                               :href  "grouping-content.html#the-main-element"}
+                  :implements HTMLElement
+                  :categories [:flow]}
+
+          #:miraj{:defn map :html-tag :map
+                  :doc #:miraj{:short "Image map"
+                               :href  "embedded-content-0.html#the-map-element"}
+                  :implements HTMLMapElement
+                  :categories [:flow :phrasing]}
+
+          #:miraj{:defn mark :html-tag :mark
+                  :doc #:miraj{:short "Highlight. The mark element represents a run of text in one document marked or highlighted for reference purposes, due to its relevance in another context. When used in a quotation or other block of text referred to from the prose, it indicates a highlight that was not originally present but which has been added to bring the reader's attention to a part of the text that might not have been considered important by the original author when the block was originally written, but which is now under previously unexpected scrutiny. When used in the main prose of a document, it indicates a part of the document that has been highlighted due to its likely relevance to the user's current activity"
+                               :href  "text-level-semantics.html#the-mark-element"}
+                  :implements HTMLElement
+                  :categories [:flow :phrasing]}
+
+          ;; #:miraj{:defn math :html-tag :math
+          ;;  :doc #:miraj{:short "MathML root"
+          ;;        :href  ""}
+          ;;  :implements HTMLElement
+          ;;  :categories [:flow]}
+
+          ;; #:miraj{:defn menu :html-tag :menu
+          ;;  :doc #:miraj{:short "menu of commands"
+          ;;        :href  ""}
+          ;;  :implements HTMLElement
+          ;;  :categories [:flow]}
+
+          ;; #:miraj{:defn menuitem :html-tag :menuitem
+          ;;  :doc #:miraj{:short "menu item"
+          ;;        :href  ""}
+          ;;  :implements HTMLElement
+          ;;  :categories [:flow]}
+
+          #:miraj{:defn meta :html-tag :meta
+                  :doc #:miraj{:short "Text metadata."
+                               :href  "document-metadata.html#the-meta-element"}
+                  :implements HTMLMetaElement
+                  :type :void
+                  :categories [:metadata :flow :phrasing]}
+
+          #:miraj{:defn meter :html-tag :meter
+                  :doc #:miraj{:short "Gauge. The meter element represents a scalar measurement within a known range, or a fractional value; for example disk usage, the relevance of a query result, or the fraction of a voting population to have selected a particular candidate."
+                               :href  "forms.html#the-meter-element"}
+                  :implements HTMLMeterElement
+                  :categories [:flow :phrasing :labelable]}
+
+          #:miraj{:defn nav :html-tag :nav
+                  :doc #:miraj{:short "Section with navigational links."
+                               :href  "sections.html#the-nav-element"}
+                  :implements HTMLElement
+                  :categories [:flow :sectioning]}
+
+          #:miraj{:defn noscript :html-tag :noscript
+                  :doc #:miraj{:short "Fallback content for script."
+                               :href  "scripting-1.html#the-noscript-element"}
+                  :implements HTMLElement
+                  :categories [:metadata :flow :phrasing]}
+
+          #:miraj{:defn object :html-tag :object
+                  :doc #:miraj{:short "Image, nested browsing context, or plugin."
+                               :href  "embedded-content-0.html#the-object-element"}
+                  :implements HTMLObjectElement
+                  :categories [:flow :phrasing :embedded :interactive
+                               :listed :submittable :reassociateable :form-associated]}
+
+          #:miraj{:defn ol :html-tag :ol
+                  :doc #:miraj{:short "Ordered list. The ol element represents a list of items, where the items have been intentionally ordered, such that changing the order would change the meaning of the document."
+                               :href  "grouping-content.html#the-ol-element"}
+                  :implements HTMLOListElement
+                  :categories [:flow]}
+
+          #:miraj{:defn optgroup :html-tag :optgroup
+                  :doc #:miraj{:short "Group of options in a list box."
+                               :href  "forms.html#the-optgroup-element"}
+                  :implements HTMLOptGroupElement
+                  :categories []}
+
+          #:miraj{:defn option :html-tag :option
+                  :doc #:miraj{:short "Option in a list box or combo box control."
+                               :href  "forms.html#the-option-element"}
+                  :implements HTMLOptionElement
+                  :categories []}
+
+          #:miraj{:defn output :html-tag :output
+                  :doc #:miraj{:short "Calculated output value. The output element represents the result of a calculation or user action."
+                               :href  "forms.html#the-output-element"}
+                  :implements HTMLOutputElement
+                  :categories [:flow :phrasing :listed :labelable :resettable :reassociateable :form-associated]}
+
+          #:miraj{:defn p :html-tag :p
+                  :doc #:miraj{:short "Paragraph."
+                               :href  "grouping-content.html#the-p-element"}
+                  :implements HTMLParagraphElement
+                  :categories [:flow]}
+
+          #:miraj{:defn param :html-tag :param
+                  :doc #:miraj{:short "Parameter for object."
+                               :href  "embedded-content-0.html#the-param-element"}
+                  :implements HTMLParamElement
+                  :type :void
+                  :categories []}
+
+          #:miraj{:defn pre :html-tag :pre
+                  :doc #:miraj{:short "Block of preformatted text."
+                               :href  "grouping-content.html#the-pre-element"}
+                  :implements HTMLPreElement
+                  :categories [:flow]}
+
+          #:miraj{:defn progress :html-tag :progress
+                  :doc #:miraj{:short "Progress bar."
+                               :href  "forms.html#the-progress-element"}
+                  :implements HTMLProgressElement
+                  :categories [:flow :phrasing :labelable]}
+
+          #:miraj{:defn q :html-tag :q
+                  :doc #:miraj{:short "Quotation."
+                               :href  "text-level-semantics.html#the-q-element"}
+                  :implements HTMLQuoteElement
+                  :categories [:flow :phrasing]}
+
+          #:miraj{:defn rb :html-tag :rb
+                  :doc #:miraj{:short "Ruby base."
+                               :href  "text-level-semantics.html#the-rb-element"}
+                  :implements HTMLElement
+                  :categories []}
+
+          #:miraj{:defn rp :html-tag :rp
+                  :doc #:miraj{:short "Parenthesis for ruby annotation text."
+                               :href  "text-level-semantics.html#the-rp-element"}
+                  :implements HTMLElement
+                  :categories []}
+
+          #:miraj{:defn rt :html-tag :rt
+                  :doc #:miraj{:short "Ruby annotation text."
+                               :href  "text-level-semantics.html#the-rt-element"}
+                  :implements HTMLElement
+                  :categories []}
+
+          #:miraj{:defn rtc :html-tag :rtc
+                  :doc #:miraj{:short "Ruby annotation text container."
+                               :href  "text-level-semantics.html#the-rtc-element"}
+                  :implements HTMLElement
+                  :categories []}
+
+          #:miraj{:defn ruby :html-tag :ruby
+                  :doc #:miraj{:short "Ruby annotation(s)."
+                               :href  "text-level-semantics.html#the-ruby-element"}
+                  :implements HTMLElement
+                  :categories [:flow :phrasing]}
+
+          #:miraj{:defn s :html-tag :s
+                  :doc #:miraj{:short "Inaccurate text. The s element represents contents that are no longer accurate or no longer relevant."
+                               :href  "text-level-semantics.html#the-s-element"}
+                  :implements HTMLElement
+                  :categories [:flow :phrasing]}
+
+          #:miraj{:defn samp :html-tag :samp
+                  :doc #:miraj{:short "Computer output. The samp element represents (sample) output from a program or computing system."
+                               :href  "text-level-semantics.html#the-samp-element"}
+                  :implements HTMLElement
+                  :categories [:flow :phrasing]}
+
+          #:miraj{:defn script :html-tag :script
+                  :doc #:miraj{:short "Embedded script."
+                               :href  "scripting-1.html#the-script-element"}
+                  :implements HTMLScriptElement
+                  :categories [:metadata :flow :phrasing :script-supporting]}
+
+          #:miraj{:defn section :html-tag :section
+                  :doc #:miraj{:short "Generic document or application section."
+                               :href  "sections.html#the-section-element"}
+                  :implements HTMLElement
+                  :categories [:flow :sectioning]}
+
+          #:miraj{:defn select :html-tag :select
+                  :doc #:miraj{:short "List box control. The select element represents a control for selecting amongst a set of options."
+                               :href  "forms.html#the-select-element"}
+                  :implements HTMLSelectElement
+                  :categories [:flow :phrasing :interactive :listed
+                               :labelable :submittable :resettable :reassociateable :form-associated]}
+
+          #:miraj{:defn small :html-tag :small
+                  :doc #:miraj{:short "Side comment. The small element represents side comments such as small print."
+                               :href  "text-level-semantics.html#the-small-element"}
+                  :implements HTMLElement
+                  :categories [:flow :phrasing]}
+
+          #:miraj{:defn source :html-tag :source
+                  :doc #:miraj{:short "Media source for video or audio."
+                               :href  "embedded-content-0.html#the-source-element"}
+                  :implements HTMLSourceElement
+                  :type :void
+                  :categories []}
+
+          #:miraj{:defn span :html-tag :span
+                  :doc #:miraj{:short "Generic phrasing container."
+                               :href  "text-level-semantics.html#the-span-element"}
+                  :implements HTMLSpanElement
+                  :categories [:flow :phrasing]}
+
+          #:miraj{:defn strong :html-tag :strong
+                  :doc #:miraj{:short "Importance."
+                               :href  "text-level-semantics.html#the-strong-element"}
+                  :implements HTMLElement
+                  :categories [:flow :phrasing]}
+
+          #:miraj{:defn style :html-tag :style
+                  :doc #:miraj{:short "Embedded styling information"
+                               :href  "document-metadata.html#the-style-element"}
+                  :implements HTMLStyleElement
+                  :categories [:flow :metadata]}
+
+          #:miraj{:defn sub :html-tag :sub
+                  :doc #:miraj{:short "Subscript."
+                               :href  "text-level-semantics.html#the-sub-and-sup-elements"}
+                  :implements HTMLElement
+                  :categories [:flow :phrasing]}
+
+          ;; #:miraj{:defn summary :html-tag :summary
+          ;;  :doc #:miraj{:short "summary, caption, or legend for a details control"
+          ;;        :href  ""}
+          ;;  :implements HTMLElement
+          ;;  :categories [:flow]}
+
+          #:miraj{:defn sup :html-tag :sup
+                  :doc #:miraj{:short "Superscript."
+                               :href  "text-level-semantics.html#the-sub-and-sup-elements"}
+                  :implements HTMLElement
+                  :categories [:flow :phrasing]}
+
+          ;; #:miraj{:defn svg :html-tag :svg
+          ;;  :doc #:miraj{:short "SVG root"
+          ;;        :href  ""}
+          ;;  :implements HTMLElement
+          ;;  :categories [:flow]}
+
+          #:miraj{:defn table :html-tag :table
+                  :doc #:miraj{:short "Table."
+                               :href  "tabular-data.html#the-table-element"}
+                  :implements HTMLTableElement
+                  :categories [:flow]}
+
+          #:miraj{:defn tbody :html-tag :tbody
+                  :doc #:miraj{:short "Group of rows in a table."
+                               :href  "tabular-data.html#the-tbody-element"}
+                  :implements HTMLTableSectionElement
+                  :categories []}
+
+          #:miraj{:defn td :html-tag :td
+                  :doc #:miraj{:short "Table cell."
+                               :href  "tabular-data.html#the-td-element"}
+                  :implements HTMLTableDataCellElement
+                  :categories [:sectioning-root]}
+
+          #:miraj{:defn template :html-tag :template
+                  :doc #:miraj{:short "Template. The template element is used to declare fragments of HTML that can be cloned and inserted in the document by script."
+                               :href "scripting-1.html#the-template-element"}
+                  :implements HTMLTemplateElement
+                  :categories [:metadata :flow :phrasing :script-supporting]}
+
+          #:miraj{:defn textarea :html-tag :textarea
+                  :doc #:miraj{:short "Multiline text field."
+                               :href  "forms.html#the-textarea-element"}
+                  :implements HTMLTextAreaElement
+                  :categories [:flow :phrasing :interactive :listed :labelable
+                               :submittable :resettable :reassociateable :form-associated]}
+
+          #:miraj{:defn tfoot :html-tag :tfoot
+                  :doc #:miraj{:short "Group of footer rows in a table."
+                               :href  "tabular-data.html#the-tfoot-element"}
+                  :implements HTMLTableSectionElement
+                  :categories []}
+
+          #:miraj{:defn th :html-tag :th
+                  :doc #:miraj{:short "Table header cell"
+                               :href  "tabular-data.html#the-th-element"}
+                  :implements HTMLTableHeaderCellElement
+                  :categories []}
+
+          #:miraj{:defn thead :html-tag :thead
+                  :doc #:miraj{:short "Group of heading rows in a table."
+                               :href  "tabular-data.html#the-thead-element"}
+                  :implements HTMLTableSectionElement
+                  :categories []}
+
+          #:miraj{:defn time :html-tag :time
+                  :doc #:miraj{:short "Machine-readable equivalent of date- or time-related data."
+                               :href  "text-level-semantics.html#the-time-element"}
+                  :implements HTMLTimeElement
+                  :categories [:flow :phrasing]}
+
+          #:miraj{:defn title :html-tag :title
+                  :doc #:miraj{:short "Document title."
+                               :href  "document-metadata.html#the-title-element"}
+                  :implements HTMLTitleElement
+                  :categories [:metadata]}
+
+          #:miraj{:defn tr :html-tag :tr
+                  :doc #:miraj{:short "Table row."
+                               :href  "tabular-data.html#the-tr-element"}
+                  :implements HTMLTableRowElement
+                  :categories []}
+
+          #:miraj{:defn track :html-tag :track
+                  :doc #:miraj{:short "Timed text track."
+                               :href  "embedded-content-0.html#the-track-element"}
+                  :implements HTMLTrackElement
+                  :type :void
+                  :categories []}
+
+          #:miraj{:defn u :html-tag :u
+                  :doc #:miraj{:short "Keywords. The u element represents a span of text with an unarticulated, though explicitly rendered, non-textual annotation, such as labeling the text as being a proper name in Chinese text (a Chinese proper name mark), or labeling the text as being misspelt."
+                               :href  "text-level-semantics.html#the-u-element"}
+                  :implements HTMLElement
+                  :categories [:flow :phrasing]}
+
+          #:miraj{:defn ul :html-tag :ul
+                  :doc #:miraj{:short "List. The ul element represents a list of items, where the order of the items is not important — that is, where changing the order would not materially change the meaning of the document."
+                               :href  "grouping-content.html#the-ul-element"}
+                  :implements HTMLUListElement
+                  :categories [:flow]}
+
+          #:miraj{:defn var :html-tag :var
+                  :doc #:miraj{:short "Variable. The var element represents a variable. This could be an actual variable in a mathematical expression or programming context, an identifier representing a constant, a symbol identifying a physical quantity, a function parameter, or just be a term used as a placeholder in prose."
+                               :href  "text-level-semantics.html#the-var-element"}
+                  :implements HTMLElement
+                  :categories [:flow :phrasing]}
+
+          #:miraj{:defn video :html-tag :video
+                  :doc #:miraj{:short "Video player."
+                               :href  "embedded-content-0.html#the-video-element"}
+                  :implements HTMLVideoElement
+                  :categories [:flow :phrasing :embedded :interactive]}
+
+          #:miraj{:defn wbr :html-tag :wbr
+                  :doc #:miraj{:short "Line-breaking opportunity."
+                               :href  "text-level-semantics.html#the-wbr-element"}
+                  :implements HTMLElement
+                  :type :void
+                  :categories [:flow :phrasing]}
+          ]}
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+ #:miraj{:ns miraj.html.pragma
+         :nss []
+         :lib html
+         :base {:help "https://www.w3.org/TR/html5/"}
+         :attrib "http-equiv"
+         :pragmas
+         [#:miraj{:defn content-language
+                  :html-tag :meta
+                  :non-conforming "This feature is non-conforming. Authors are encouraged to use the lang attribute instead."
+                  :doc #:miraj{:short "This feature is non-conforming. Authors are encouraged to use the lang attribute instead."
+                               :href "document-metadata.html#attr-meta-http-equiv-content-language"}
+                  :implements HTMLMetaElement
+                  :categories [:metadata :flow :phrasing]}
+
+          #:miraj{:defn content-type
+                  :html-tag :meta
+                  :doc #:miraj{:short "Pragma directive content-type sets encoding declaration state. The encoding declaration state is just an alternative form of setting the charset attribute: it is a character encoding declaration."
+                               :href "document-metadata.html#attr-meta-http-equiv-content-type"}
+                  :implements HTMLMetaElement
+                  :categories [:metadata :flow :phrasing]}
+
+          #:miraj{:defn default-style
+                  :html-tag :meta
+                  :doc #:miraj{:short "This pragma sets the name of the default alternative style sheet set."
+                               :href "document-metadata.html#attr-meta-http-equiv-default-style"}
+                  :implements HTMLMetaElement
+                  :categories [:metadata :flow :phrasing]}
+
+          #:miraj{:defn refresh
+                  :html-tag :meta
+                  :doc #:miraj{:short "This pragma acts as timed redirect."
+                               :href "document-metadata.html#attr-meta-http-equiv-refresh"}
+                  :implements HTMLMetaElement
+                  :categories [:metadata :flow :phrasing]}
+
+          #:miraj{:defn set-cookie
+                  :html-tag :meta
+                  :non-conforming "This feature is non-conforming. Real HTTP headers should be used instead."
+                  :doc #:miraj{:short "This pragma sets an HTTP cookie. It is non-conforming. Real HTTP headers should be used instead."
+                               :href "document-metadata.html#attr-meta-http-equiv-set-cookie"}
+                  :implements HTMLMetaElement
+                  :categories [:metadata :flow :phrasing]}
+
+          #:miraj{:defn content-security-policy
+                  :html-tag :meta
+                  :doc #:miraj{:short "A security policy refers to both a set of security preferences for restrictions within which content can operate, and to a fragment of text that codifies or transmits these preferences."
+                               :base {:help "https://www.w3.org/TR/CSP11"}
+                               :href "#delivery-html-meta-element"}
+                  :implements HTMLMetaElement
+                  :categories [:metadata :flow :phrasing]}
+          ]}
+ ]
