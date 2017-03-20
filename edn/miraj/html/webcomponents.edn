@@ -538,11 +538,11 @@
                   :implements HTMLElement
                   :categories [:flow :phrasing]}
 
-          #:miraj{:defn script :html-tag :script
-                  :doc #:miraj{:short "Embedded script."
-                               :href  "scripting-1.html#the-script-element"}
-                  :implements HTMLScriptElement
-                  :categories [:metadata :flow :phrasing :script-supporting]}
+          ;; #:miraj{:defn script :html-tag :script
+          ;;         :doc #:miraj{:short "Embedded script."
+          ;;                      :href  "scripting-1.html#the-script-element"}
+          ;;         :implements HTMLScriptElement
+          ;;         :categories [:metadata :flow :phrasing :script-supporting]}
 
           #:miraj{:defn section :html-tag :section
                   :doc #:miraj{:short "Generic document or application section."
@@ -718,55 +718,55 @@
                   :categories [:flow :phrasing]}
           ]}
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
- #:miraj{:ns miraj.html.pragma
-         :nss []
-         :lib html
-         :base {:help "https://www.w3.org/TR/html5/"}
-         :attrib "http-equiv"
-         :pragmas
-         [#:miraj{:defn content-language
-                  :html-tag :meta
-                  :non-conforming "This feature is non-conforming. Authors are encouraged to use the lang attribute instead."
-                  :doc #:miraj{:short "This feature is non-conforming. Authors are encouraged to use the lang attribute instead."
-                               :href "document-metadata.html#attr-meta-http-equiv-content-language"}
-                  :implements HTMLMetaElement
-                  :categories [:metadata :flow :phrasing]}
+ ;; #:miraj{:ns miraj.html.pragma
+ ;;         :nss []
+ ;;         :lib html
+ ;;         :base {:help "https://www.w3.org/TR/html5/"}
+ ;;         :attrib "http-equiv"
+ ;;         :pragmas
+ ;;         [#:miraj{:defn content-language
+ ;;                  :html-tag :meta
+ ;;                  :non-conforming "This feature is non-conforming. Authors are encouraged to use the lang attribute instead."
+ ;;                  :doc #:miraj{:short "This feature is non-conforming. Authors are encouraged to use the lang attribute instead."
+ ;;                               :href "document-metadata.html#attr-meta-http-equiv-content-language"}
+ ;;                  :implements HTMLMetaElement
+ ;;                  :categories [:metadata :flow :phrasing]}
 
-          #:miraj{:defn content-type
-                  :html-tag :meta
-                  :doc #:miraj{:short "Pragma directive content-type sets encoding declaration state. The encoding declaration state is just an alternative form of setting the charset attribute: it is a character encoding declaration."
-                               :href "document-metadata.html#attr-meta-http-equiv-content-type"}
-                  :implements HTMLMetaElement
-                  :categories [:metadata :flow :phrasing]}
+ ;;          #:miraj{:defn content-type
+ ;;                  :html-tag :meta
+ ;;                  :doc #:miraj{:short "Pragma directive content-type sets encoding declaration state. The encoding declaration state is just an alternative form of setting the charset attribute: it is a character encoding declaration."
+ ;;                               :href "document-metadata.html#attr-meta-http-equiv-content-type"}
+ ;;                  :implements HTMLMetaElement
+ ;;                  :categories [:metadata :flow :phrasing]}
 
-          #:miraj{:defn default-style
-                  :html-tag :meta
-                  :doc #:miraj{:short "This pragma sets the name of the default alternative style sheet set."
-                               :href "document-metadata.html#attr-meta-http-equiv-default-style"}
-                  :implements HTMLMetaElement
-                  :categories [:metadata :flow :phrasing]}
+ ;;          #:miraj{:defn default-style
+ ;;                  :html-tag :meta
+ ;;                  :doc #:miraj{:short "This pragma sets the name of the default alternative style sheet set."
+ ;;                               :href "document-metadata.html#attr-meta-http-equiv-default-style"}
+ ;;                  :implements HTMLMetaElement
+ ;;                  :categories [:metadata :flow :phrasing]}
 
-          #:miraj{:defn refresh
-                  :html-tag :meta
-                  :doc #:miraj{:short "This pragma acts as timed redirect."
-                               :href "document-metadata.html#attr-meta-http-equiv-refresh"}
-                  :implements HTMLMetaElement
-                  :categories [:metadata :flow :phrasing]}
+ ;;          #:miraj{:defn refresh
+ ;;                  :html-tag :meta
+ ;;                  :doc #:miraj{:short "This pragma acts as timed redirect."
+ ;;                               :href "document-metadata.html#attr-meta-http-equiv-refresh"}
+ ;;                  :implements HTMLMetaElement
+ ;;                  :categories [:metadata :flow :phrasing]}
 
-          #:miraj{:defn set-cookie
-                  :html-tag :meta
-                  :non-conforming "This feature is non-conforming. Real HTTP headers should be used instead."
-                  :doc #:miraj{:short "This pragma sets an HTTP cookie. It is non-conforming. Real HTTP headers should be used instead."
-                               :href "document-metadata.html#attr-meta-http-equiv-set-cookie"}
-                  :implements HTMLMetaElement
-                  :categories [:metadata :flow :phrasing]}
+ ;;          #:miraj{:defn set-cookie
+ ;;                  :html-tag :meta
+ ;;                  :non-conforming "This feature is non-conforming. Real HTTP headers should be used instead."
+ ;;                  :doc #:miraj{:short "This pragma sets an HTTP cookie. It is non-conforming. Real HTTP headers should be used instead."
+ ;;                               :href "document-metadata.html#attr-meta-http-equiv-set-cookie"}
+ ;;                  :implements HTMLMetaElement
+ ;;                  :categories [:metadata :flow :phrasing]}
 
-          #:miraj{:defn content-security-policy
-                  :html-tag :meta
-                  :doc #:miraj{:short "A security policy refers to both a set of security preferences for restrictions within which content can operate, and to a fragment of text that codifies or transmits these preferences."
-                               :base {:help "https://www.w3.org/TR/CSP11"}
-                               :href "#delivery-html-meta-element"}
-                  :implements HTMLMetaElement
-                  :categories [:metadata :flow :phrasing]}
-          ]}
+ ;;          #:miraj{:defn content-security-policy
+ ;;                  :html-tag :meta
+ ;;                  :doc #:miraj{:short "A security policy refers to both a set of security preferences for restrictions within which content can operate, and to a fragment of text that codifies or transmits these preferences."
+ ;;                               :base {:help "https://www.w3.org/TR/CSP11"}
+ ;;                               :href "#delivery-html-meta-element"}
+ ;;                  :implements HTMLMetaElement
+ ;;                  :categories [:metadata :flow :phrasing]}
+ ;;          ]}
  ]

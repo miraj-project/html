@@ -9,17 +9,20 @@
  ;; :asset-paths #{"resources/public"}
 
  :checkouts '[[miraj/co-dom                  "0.1.0-SNAPSHOT"]
-              [miraj/html                    "5.1.0-SNAPSHOT"]
+              ;; [miraj/html                    "5.1.0-SNAPSHOT"]
 ;;              [miraj/core                    "0.1.0-SNAPSHOT"]
               ]
 
- :dependencies '[[org.clojure/clojure        RELEASE]
-                 [org.clojure/clojurescript  "1.7.228"]
+ :dependencies '[;; [org.clojure/clojure        RELEASE]
+                 ;; [org.clojure/clojurescript  "1.7.228"]
                  [miraj/boot-miraj           "0.1.0-SNAPSHOT" :scope "test"]
 
-;;                 [miraj/core                 "0.1.0-SNAPSHOT"]
-                 [miraj/html                 "5.1.0-SNAPSHOT"]
+                 ;; [miraj               "0.1.0-SNAPSHOT"]
                  [miraj/co-dom               "0.1.0-SNAPSHOT"]
+                 [miraj/polymer               "1.2.3-SNAPSHOT"]
+                 ;; [miraj/core                 "0.1.0-SNAPSHOT"]
+                 ;; [miraj/html                 "5.1.0-SNAPSHOT"]
+
                  ;; [miraj/polymer "1.2.3-SNAPSHOT"]
                  ;; [miraj/dom "1.2.3-SNAPSHOT"]
                  ;; [miraj/iron "1.2.3-SNAPSHOT"]
@@ -28,6 +31,15 @@
                  ;; [miraj/boot-miraj "0.1.0-SNAPSHOT"]
                  ;; [adzerk/boot-cljs "1.7.228-1" :scope "test"]
                  ;; [adzerk/boot-cljs-repl "0.3.0" :scope "test"]
+
+                 [org.clojure/tools.logging "0.3.1"]
+                 [org.slf4j/slf4j-log4j12 "1.7.1"]
+                 [log4j/log4j "1.2.17" :exclusions [javax.mail/mail
+                                                    javax.jms/jms
+                                                    com.sun.jmdk/jmxtools
+                                                    com.sun.jmx/jmxri]]
+                 [clj-logging-config "1.9.7"]
+
                  [adzerk/boot-reload "0.5.1" :scope "test"]
                  [pandeiro/boot-http "0.7.3"           :scope "test"]
                  ;; [crisptrutski/boot-cljs-test "0.2.2-SNAPSHOT"  :scope "test"]
@@ -75,12 +87,12 @@
   "watch etc."
   []
   (set-env! :source-paths #(conj % "src/test/clj"))
-  (comp (serve)
+  (comp (repl)
         (watch)
         (notify :audible true)
         ;; (refresh)
         (miraj/compile :libraries true :debug true)
-        (miraj/compile :pages true :debug true :keep true)
+                                        ;        (miraj/compile :pages true :debug true :keep true)
         (target)))
 
 (deftask install-local
