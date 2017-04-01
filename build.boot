@@ -8,14 +8,14 @@
  ;; :target-path "resources/public"
  ;; :asset-paths #{"resources/public"}
 
+ :repositories #(conj % ["clojars" {:url "https://clojars.org/repo/"}])
+
  :checkouts '[[miraj/co-dom                  "0.1.0-SNAPSHOT"]
               ;; [miraj/html                    "5.1.0-SNAPSHOT"]
 ;;              [miraj/core                    "0.1.0-SNAPSHOT"]
               ]
 
- :dependencies '[;; [org.clojure/clojure        RELEASE]
-                 ;; [org.clojure/clojurescript  "1.7.228"]
-                 [miraj/boot-miraj           "0.1.0-SNAPSHOT" :scope "test"]
+ :dependencies '[[miraj/boot-miraj           "0.1.0-SNAPSHOT" :scope "test"]
 
                  ;; [miraj               "0.1.0-SNAPSHOT"]
                  [miraj/co-dom               "0.1.0-SNAPSHOT"]
@@ -58,7 +58,12 @@
 (task-options!
  repl {:port 8080}
  pom {:project +project+
-      :version +version+}
+      :version +version+
+      :description "HTML5 Functions"
+      :url         "https://github.com/miraj-project/html"
+      :scm         {:url "https://github.com/miraj-project/html.git"}
+      :license     {"EPL" "http://www.eclipse.org/legal/epl-v10.html"}})
+
  jar {:manifest {"root" "miraj"}})
 
 (deftask build
@@ -82,33 +87,32 @@
    ;; (boot/sift :to-resource #{#".*\.cljs\.edn"}) ;; keep main.cljs.edn, produced by (cljs)
    (target   :no-clean   true)))
 
-;; plain repl won't do, the target dir will not be on the classpath
 (deftask dev
-  "watch etc."
-  []
-  (set-env! :source-paths #(conj % "src/test/clj"))
-  (comp (repl)
-        (watch)
-        (notify :audible true)
-        ;; (refresh)
-        (miraj/compile :libraries true :debug true)
-                                        ;        (miraj/compile :pages true :debug true :keep true)
-        (target)))
-
-(deftask install-local
-  "Build and install a component library"
-  []
-  (comp (build)
-        (pom)
-        (jar)
-        (install)))
-
-(deftask monitor
   "watch etc."
   []
   (comp (watch)
         (notify :audible true)
         (miraj/compile :libraries true :verbose true)
+        (pom)
+        (jar)
+        (install)))
+
+;; (deftask dev
+;;   "watch etc."
+;;   []
+;;   (set-env! :source-paths #(conj % "src/test/clj"))
+;;   (comp (repl)
+;;         (watch)
+;;         (notify :audible true)
+;;         ;; (refresh)
+;;         (miraj/compile :libraries true :debug true)
+;;                                         ;        (miraj/compile :pages true :debug true :keep true)
+;;         (target)))
+
+(deftask install-local
+  "Build and install a component library"
+  []
+  (comp (build)
         (pom)
         (jar)
         (install)))
