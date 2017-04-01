@@ -1,7 +1,8 @@
 (in-ns 'miraj.html)
 
 (require '[clojure.spec :as s]
-         '[clojure.string :as str])
+         '[clojure.string :as str]
+         '[miraj.co-dom :as codom :refer [element]])
 
 (def xform-registry (atom {}))
 
@@ -11,7 +12,7 @@
 
 (defn ->meta
   [tag content]
-  (miraj.html/meta {:name (clojure.core/name tag) :content content}))
+  (element :meta {:name (clojure.core/name tag) :content content}))
 
 (defn noop
   [tag content]
@@ -87,13 +88,13 @@
 (s/def ::viewport (s/keys :opt [::width ::height ::scale ::user-scalable]))
 (register-xform ::viewport (fn [k v]
                              ;;(log/debug (format "VIEWPORT %s %s" k (seq v)))
-                             (miraj.html/meta {:content (str/join ", " v)
+                             (element :meta {:content (str/join ", " v)
                                                :name "viewport"})))
 
 
 ;; html5-pseudo-meta-attribs
 (s/def ::title string?)
-(register-xform ::title (fn [k v] (miraj.html/title v)))
+(register-xform ::title (fn [k v] (element :title v)))
 
 (s/def ::base string?)
 
@@ -131,7 +132,7 @@
                             (do
                               ;; (log/debug (format "ICON %s" (into {} icon)))
                                         ;(let [attrs (for [attr v] (str
-                              (miraj.html/link (merge {:rel "icon"}
+                              (element :link (merge {:rel "icon"}
                                                       (into {} icon)))))))
 
 
@@ -168,7 +169,7 @@
                            (log/debug (format "PRAGMA %s" (into {} v)))
                            (for [[k v] (into {} v)]
                              (do (log/debug (format "Pragma %s %s" k v))
-                                 (miraj.html/meta {:http-equiv (clojure.core/name k)
+                                 (element :meta {:http-equiv (clojure.core/name k)
                                                    :content v})))))
 
 (s/def ::uri uri?)
