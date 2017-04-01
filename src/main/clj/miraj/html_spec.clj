@@ -1,11 +1,144 @@
 (in-ns 'miraj.html)
 
-(require '[clojure.spec :as spec])
+(require '[clojure.spec :as s]
+         '[clojure.string :as str])
 
-(spec/def ::description string?)
+(def xform-registry (atom {}))
 
-(spec/def ::title string?)
-(spec/def ::base string?)
+(defn register-xform [k f]
+  ;; (log/debug (format "REGISTER XFORM %s" k))
+  (swap! xform-registry assoc k f))
+
+(defn ->meta
+  [tag content]
+  (miraj.html/meta {:name (clojure.core/name tag) :content content}))
+
+(defn noop
+  [tag content]
+  ;;(log/debug (format "NOOP %s %s" tag (if (seq? content) (seq content) content)))
+  {tag content})
+
+;; types
+
+;; comma-separated tokens, e.g. for ::keywords
+(s/def ::tokens? (s/coll-of string?))
+
+;; https://www.w3.org/TR/html5/document-metadata.html#standard-metadata-names
+#_(def html5-meta-attribs-standard
+  #:html{:charset :encoding-decl   ;; :content is implicit as value of map entry
+         ;; standard vals for name attrib
+         :application-name :string
+         :author :string
+         :description :string
+         :generator :string
+         :keywords :tokens})
+(s/def ::charset string?)
+(register-xform ::charset ->meta)
+
+(s/def ::application-name string?)
+(register-xform ::application-name ->meta)
+
+(s/def ::author string?)
+(register-xform ::author ->meta)
+
+(s/def ::description string?)
+(register-xform ::description ->meta)
+
+(s/def ::generator string?)
+(register-xform ::generator ->meta)
+
+(s/def ::keywords ::tokens?)
+
+;; viewport: https://drafts.csswg.org/css-device-adapt/#viewport-meta
+;; (s/def ::device-width (fn [x] (= x :device-width)))
+;; (register-xform ::device-width (fn [x] "device-width"))
+
+(s/def ::width (fn [x] (or (number? x) (= x :device-width))))
+(register-xform ::width (fn [tag content]
+                          (str "width=" (if (number? content) content "device-width"))))
+
+(s/def ::device-height (fn [x] (= x :device-height)))
+(register-xform ::device-height (fn [x] "device-height"))
+
+(s/def ::height (s/alt :n number? :h ::device-height))
+(register-xform ::height noop)
+
+(s/def ::initial number?)
+(register-xform ::initial (fn [k v] (str "initial-scale=" v)))
+
+(s/def ::min number?)
+(register-xform ::min (fn [k v] (str "minimum-scale=" v)))
+
+(s/def ::max number?)
+(register-xform ::max (fn [k v] (str "maximum-scale=" v)))
+
+(s/def ::user-scalable boolean?)
+(register-xform ::user-scalable (fn [k v] (str "user-scalable=" (if v "yes" "no"))))
+
+;; (s/def ::target-density (fn [x] (= x :device))
+;; (register-xform ::target-density (fn [k v] (str "target-densitydpi=" (if v "yes" "no"))))
+
+(s/def ::scale (s/keys :opt [::initial ::min ::max]))
+(register-xform ::scale (fn [k v]
+                          ;;(log/debug (format "SCALE %s %s" k (seq v)))
+                          (str/join ", " v)))
+
+  ;; <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
+(s/def ::viewport (s/keys :opt [::width ::height ::scale ::user-scalable]))
+(register-xform ::viewport (fn [k v]
+                             ;;(log/debug (format "VIEWPORT %s %s" k (seq v)))
+                             (miraj.html/meta {:content (str/join ", " v)
+                                               :name "viewport"})))
+
+
+;; html5-pseudo-meta-attribs
+(s/def ::title string?)
+(register-xform ::title (fn [k v] (miraj.html/title v)))
+
+(s/def ::base string?)
+
+#_(def html5-link-meta
+  ;; link elements treated as meta-data
+ {:icon ^:compound {:uri :uri :sizes :sizes}
+  :manifest :uri})
+
+;; link rel="icon": https://www.w3.org/TR/html5/links.html#rel-icon
+ ;; <link rel=icon href=favicon.png sizes="16x16" type="image/png">
+ ;;  <link rel=icon href=windows.ico sizes="32x32 48x48" type="image/vnd.microsoft.icon">
+ ;;  <link rel=icon href=mac.icns sizes="128x128 512x512 8192x8192 32768x32768">
+ ;;  <link rel=icon href=iphone.png sizes="57x57" type="image/png">
+ ;;  <link rel=icon href=gnome.svg sizes="any" type="image/svg+xml">
+
+(s/def ::href string?)
+(register-xform ::href (fn [k v] {:href (str v)}))
+
+(s/def ::size (s/cat :w number? :h number?))
+(register-xform ::size (fn [k v] ;;(log/debug (format "SIZE %s %s" k v))
+                         ))
+
+(s/def ::sizes (s/coll-of ::size :kind set?))
+(register-xform ::sizes (fn [k v] ;; (log/debug (format "SIZES %s %s" k v))
+                          {:sizes (str/join " " (for [[w h] v] (str w "x" h)))}))
+
+(s/def ::type string?)
+(register-xform ::type (fn [k v] {:type (str v)}))
+
+(s/def ::icon (s/keys :req [::href]
+                      :opt [::sizes ::type]))
+(s/def ::icons (s/coll-of ::icon :kind vector?))
+(register-xform ::icons (fn [k v] ;;(log/debug (format "ICONS %s %s" k v))
+                          (for [icon v]
+                            (do
+                              ;; (log/debug (format "ICON %s" (into {} icon)))
+                                        ;(let [attrs (for [attr v] (str
+                              (miraj.html/link (merge {:rel "icon"}
+                                                      (into {} icon)))))))
+
+
+
+#_(def html5-miraj-meta-attribs
+  {:platform (merge apple-meta-tags ms-meta-tags mobile-meta-tags)})
+
 
 ;; (def mobile-meta-tags
 ;;   {:mobile {:agent ^:compound {:format #{:wml :xhtml :html5}
@@ -13,32 +146,57 @@
 ;;             :web-app {:capability :fullscreen}}})
 
 
-(spec/def ::uri uri?)
+(s/def ::content-security-policy string?)
+(register-xform ::content-security-policy (fn [k v] {:Content-Security-Policy v}))
 
-(spec/def ::icon (spec/keys :req [::uri]))
+(s/def ::default-style string?)
+(register-xform ::default-style (fn [k v] {k v}))
 
-(spec/def ::web-app-capable (fn [x] (instance? Boolean x)))
+(s/def ::refresh string?)
+(register-xform ::refresh (fn [k v] {k v}))
 
-(spec/def ::status-bar-style (fn [x] (contains? #{:default :black :black-translucent} x)))
+;; extensions
+(s/def ::x-ua-compatible string?)
+(register-xform ::x-ua-compatible (fn [k v] {:X-UA-Compatible v}))
 
-(spec/def ::telephone-number-detection (fn [x] (= :disable)))
+(s/def ::pics-label string?)
+(register-xform ::pics-label (fn [k v] {:PICS-Label v}))
 
-(spec/def ::app (spec/keys :opt [::id ::argument]))
+(s/def ::pragma (s/keys :opt [::content-security-policy ::default-style ::refresh
+                              ::pics-label]))
+(register-xform ::pragma (fn [k v]
+                           (log/debug (format "PRAGMA %s" (into {} v)))
+                           (for [[k v] (into {} v)]
+                             (do (log/debug (format "Pragma %s %s" k v))
+                                 (miraj.html/meta {:http-equiv (clojure.core/name k)
+                                                   :content v})))))
 
-(spec/def ::itunes-app (spec/keys :opt [::app ::affiliate-data]))
+(s/def ::uri uri?)
 
-(spec/def ::mobile-web-app (spec/keys :opt [::status-bar-style ::title]))
+(s/def ::web-app-capable (fn [x] (instance? Boolean x)))
 
-(spec/def ::touch (spec/keys :req [::foo] :opt [::icon ::startup-image]))
+(s/def ::status-bar-style (fn [x] (contains? #{:default :black :black-translucent} x)))
 
-(spec/def ::apple (spec/keys :opt [::format-detection
+(s/def ::telephone-number-detection (fn [x] (= :disable)))
+
+(s/def ::app (s/keys :opt [::id ::argument]))
+
+(s/def ::itunes-app (s/keys :opt [::app ::affiliate-data]))
+
+(s/def ::mobile-web-app (s/keys :opt [::status-bar-style ::title]))
+
+(s/def ::touch (s/keys :req [::foo] :opt [::icon ::startup-image]))
+
+(s/def ::apple (s/keys :opt [::format-detection
                                    ::itunes-app
                                    ::mobile-web-app
                                    ::touch]))
 
-(spec/def ::platform (spec/keys :opt [::apple ::ms]))
+(s/def ::platform (s/keys :opt [::apple ::ms]))
 
-(spec/def ::meta (spec/keys :opt [::title ::description ::platform]))
+(s/def ::meta (s/keys :opt [::title ::description ::platform]))
+(register-xform ::meta (fn [k v] v))
+
 
 ;; https://developer.apple.com/library/content/documentation/AppleApplications/Reference/SafariWebContent/PromotingAppswithAppBanners/PromotingAppswithAppBanners.html
 
@@ -73,21 +231,6 @@
 #_(def twitter-meta-tags
   )
 
-;; https://www.w3.org/TR/html5/document-metadata.html#standard-metadata-names
-#_(def html5-meta-attribs-standard
-  #:html{:charset :encoding-decl   ;; :content is implicit as value of map entry
-         ;; standard vals for name attrib
-         :application-name :string
-         :author :string
-         :description :string
-         :generator :string
-         :keywords :tokens})
-
-
-#_(def html5-pseudo-meta-attribs
-  #:html{:title 'FIXME
-         :base  'FIXME})
-
 #_(def html5-meta-attribs-extended
    ;; extended name attribs https://wiki.whatwg.org/wiki/MetaExtensions
   {:viewport ^:compound {:width #{:auto :device :pixels}
@@ -113,14 +256,6 @@
              :description :_
              ;; etc.
              }})
-
-#_(def html5-link-meta
-  ;; link elements treated as meta-data
- {:icon ^:compound {:uri :uri :sizes :sizes}
-  :manifest :uri})
-
-#_(def html5-miraj-meta-attribs
-  {:platform (merge apple-meta-tags ms-meta-tags mobile-meta-tags)})
 
 #_(def html5-meta-attribs
   (merge {} html5-global-attrs
