@@ -33,6 +33,65 @@ It's functions all the way down, so you can compose to your heart's content.
 
 == meta
 
+With miraj.html you can express HTML metadata (i.e. <meta> and <link>
+elements in <head>) as a clojure map.
+
+For example:
+
+[source,clojure]
+----
+  #::h{:title"Miraj demo: hello-world"
+       :description "This page demonstrates of a simple miraj webpage."
+==>
+    <title>Miraj demo: hello-world</title>
+    <meta content="This page demonstrates of a simple miraj webpage." name="description">
+----
+
+A more complex example:
+
+[source,clojure]
+----
+(def html-meta
+  #::h{:title"Miraj demo: hello-world"
+       :description "This page demonstrates of a simple miraj webpage."
+       :charset "utf-8"
+       :viewport #::h{:width :device-width
+                      :scale #::h{:min 0.5
+                                  :max 2
+                                  :initial 1}
+                      :user-scalable true}
+       :pragma #::h{:x-ua-compatible "IE=edge,chrome=1"
+       	            :default-style "main-style"
+		    	    :pics-label "pics label"
+			   }
+       :icons [#::h{:href "favicon.png" :sizes #{[16 16]} :type "image/png"}
+       	       #::h{:href "mac.icns" :sizes #{[128 128] [512 512] [8192 8192] [32768 32768]}}]
+
+       ;; invalid keys (ignored):
+       :fooB {:bar 9}
+       ;; fooC 99
+       \a "abc"
+       0 true
+       :bar "foo test"})
+----
+
+Serializes to:
+
+[source,html]
+----
+<head>
+    <meta content="width=device-width, minimum-scale=0.5, maximum-scale=2, initial-scale=1, user-scalable=yes" name="viewport">
+    <meta content="utf-8" name="charset">
+    <title>Miraj demo: hello-world</title>
+    <meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible">
+    <meta content="main-style" http-equiv="default-style">
+    <meta content="pics label" http-equiv="PICS-Label">
+    <link rel="icon" sizes="16x16" type="image/png" href="favicon.png">
+    <link rel="icon" sizes="32768x32768 8192x8192 128x128 512x512" href="mac.icns">
+    <meta content="This page demonstrates of a simple miraj webpage." name="description">
+</head>
+----
+
 
 === pragma directives
 
