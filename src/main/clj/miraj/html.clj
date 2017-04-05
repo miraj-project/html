@@ -4,7 +4,8 @@
             [clojure.string :as str]
             [clojure.walk   :as walk]
             [clojure.tools.logging :as log :only [trace debug info warn error]]
-            [miraj.co-dom :as codom]))
+            [miraj.co-dom :as codom]
+            [miraj.html.x.ms :as ms]))
 
 (alter-meta! *ns* (fn [m] (assoc m :miraj/miraj {:miraj/elements true
                                                  :miraj/nss '[]
@@ -16,7 +17,10 @@
                                                    ]
                                                    :miraj/base ""}})))
 
+(println "loading html_impl")
 (load "html_impl")
+
+(println "loading html_spec")
 (load "html_spec")
 
 ;;;;;;;; COMPONENT: miraj.html/script ;;;;;;;;;;;;;;;;
@@ -67,8 +71,11 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (def html-kw-specs
-  (let [fspecs (filter #(= "miraj.html"
-                           (-> % first namespace)) (s/registry))
+  (let [fspecs (filter #(or
+                         (= "miraj.html" (-> % first namespace))
+                         (= "miraj.html.x.apple" (-> % first namespace))
+                         (= "miraj.html.x.ms" (-> % first namespace)))
+                       (s/registry))
         specs (set (clojure.core/map #(-> % first) fspecs))]
     specs))
 
@@ -76,15 +83,17 @@
   "Recursively validates html-meta map keys, removing invalid ones."
   {:added "5.1.0"}
   [m]
-  (log/debug (format "VALIDATE-meta-keys %s" m))
+  ;; (log/debug (format "VALIDATE-meta-keys %s" m))
   ;; (log/debug (format "HTML-KW-SPECS %s" html-kw-specs))
-  (let [f (fn [[k v]] ;; (log/debug (format "VVVV k: %s v: %s" k v))
-            (if (contains? html-kw-specs k)
+  (let [f (fn [[k v]] ;; (log/debug (format "Validating key: %s" k))
+            (if (and (keyword? k) (contains? html-kw-specs k))
               [k v]
-                (do (log/warn (format "HTML Meta: ignoring unrecognized key %s" k))
-                    (if (and (keyword? k) (nil? (namespace k)))
-                      (log/warn "\t(Did you forget to namespace it with miraj.html?)"))
-                    {})))]
+              (do
+                (if (keyword? k)
+                  (log/warn (format "HTML Meta: unregistered key %s" k)))
+                (if (and (keyword? k) (nil? (namespace k)))
+                  (log/warn "\t(Did you forget to namespace it with miraj.html?)"))
+                [k v])))]
             ;; (if (keyword? k)
             ;;   (if (= "miraj.html" (namespace k))
             ;;     [k v]
@@ -105,10 +114,12 @@
 
 (defn validate-html-meta
   [html-meta]
-  (log/debug (format "Validate HTML meta %s" html-meta))
+  ;; (log/debug (format "Validate HTML meta %s" html-meta))
   (let [v-meta (validate-meta-keys html-meta)
-        ;; _ (log/debug (format "Validated HTML meta: %s" v-meta))
-        parsed (spec/conform ::meta v-meta)]
+        ;; _ (log/debug (format "Validated HTML meta keys: %s" v-meta))
+        parsed (spec/conform ::meta v-meta)
+        ;; _ (log/debug (format "PARSED %s" parsed))
+        ]
     (if (not (spec/valid? ::meta v-meta)) ;;= parsed ::spec/invalid)
       (do
         (log/warn (format "Invalid HTML meta-data map: %s" (spec/explain-str ::meta v-meta)))))
@@ -124,25 +135,27 @@
   #_(log/debug (format "PREWALK %s" (with-out-str
                                     (walk/prewalk-demo html-tags))))
   (let [f (fn [[k v]]
-            (log/debug (format "Xforming: %s %s" k (if (seq? v) (seq v) v)))
+            ;; (log/debug (format "Xforming: %s %s" k (if (seq? v) (seq v) v)))
             (apply
                (get @xform-registry k
-                    (fn [k v] (log/debug (format "NO HANDLER FOUND FOR %s" k))
-                      []))
+                    (fn [k v] ;; (log/debug (format "NO HANDLER FOUND FOR %s" k))
+                      ;; default: identity xform
+                      {k v}))
                [k v]))]
-    (flatten (walk/postwalk (fn [x] ;; (log/debug (format "WALKING %s %s" x (clojure.core/map? x)))
-                     (if (clojure.core/map? x)
-                       (let [;; _ (log/debug (format "INPUT MAP %s" x))
-                             res (remove empty? (into [] (clojure.core/map f x)))
-                             ;; _ (log/debug (format "OUTPUT %s" (seq res)))
-                             ]
-                         res)
-                       ;; (if (keyword? x)
-                       ;;   (do (log/debug (format "KW NODE %s" x))
-                       ;;       (apply
-                       ;;        (get @xform-registry x
-                       ;;             (fn [x] (log/debug (format "NO HANDLER FOUND FOR %s" x))
-                       ;;               []))
-                       ;;        [x]))
-                         x))
+    (flatten (walk/postwalk (fn [x]
+                              ;; (log/debug (format "WALKING %s %s" x (clojure.core/map? x)))
+                              (if (clojure.core/map? x)
+                                (let [;; _ (log/debug (format "INPUT MAP %s" x))
+                                      res (remove empty? (into [] (clojure.core/map f x)))
+                                      ;; _ (log/debug (format "OUTPUT %s" (seq res)))
+                                      ]
+                                  res)
+                                ;; (if (keyword? x)
+                                ;;   (do (log/debug (format "KW NODE %s" x))
+                                ;;       (apply
+                                ;;        (get @xform-registry x
+                                ;;             (fn [x] (log/debug (format "NO HANDLER FOUND FOR %s" x))
+                                ;;               []))
+                                ;;        [x]))
+                                x))
                    html-tags))))

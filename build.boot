@@ -10,18 +10,16 @@
 
  :repositories #(conj % ["clojars" {:url "https://clojars.org/repo/"}])
 
- :checkouts '[[miraj/co-dom                  "0.1.0-SNAPSHOT"]
-              ;; [miraj/html                    "5.1.0-SNAPSHOT"]
+ :checkouts '[[miraj/co-dom                  "1.0.0-SNAPSHOT"]
 ;;              [miraj/core                    "0.1.0-SNAPSHOT"]
               ]
 
  :dependencies '[[miraj/boot-miraj           "0.1.0-SNAPSHOT" :scope "test"]
 
                  ;; [miraj               "0.1.0-SNAPSHOT"]
-                 [miraj/co-dom               "0.1.0-SNAPSHOT"]
+                 [miraj/co-dom               "1.0.0-SNAPSHOT"]
                  [miraj/polymer               "1.2.3-SNAPSHOT"]
                  ;; [miraj/core                 "0.1.0-SNAPSHOT"]
-                 ;; [miraj/html                 "5.1.0-SNAPSHOT"]
 
                  ;; [miraj/polymer "1.2.3-SNAPSHOT"]
                  ;; [miraj/dom "1.2.3-SNAPSHOT"]
@@ -59,11 +57,10 @@
  repl {:port 8080}
  pom {:project +project+
       :version +version+
-      :description "HTML5 Functions"
+      :description "Clojure HTML5 Functions"
       :url         "https://github.com/miraj-project/html"
       :scm         {:url "https://github.com/miraj-project/html.git"}
-      :license     {"EPL" "http://www.eclipse.org/legal/epl-v10.html"}})
-
+      :license     {"EPL" "http://www.eclipse.org/legal/epl-v10.html"}}
  jar {:manifest {"root" "miraj"}})
 
 (deftask build
@@ -71,7 +68,7 @@
   []
   (comp (miraj/compile :libraries true :debug true)
         ;; (miraj/compile :styles    true :debug true :keep true)
-        (target)))
+        #_(target)))
 
 (deftask demos
   "build component demos"
@@ -90,12 +87,14 @@
 (deftask dev
   "watch etc."
   []
-  (comp (watch)
+  (comp (repl)
+        (watch)
         (notify :audible true)
-        (miraj/compile :libraries true :verbose true)
-        (pom)
-        (jar)
-        (install)))
+        (build)))
+
+        ;; (pom)
+        ;; (jar)
+        ;; (install)))
 
 ;; (deftask dev
 ;;   "watch etc."

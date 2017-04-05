@@ -7,8 +7,6 @@
 (def s (h/script {:type "application/x-clojurescript"}
           (defn f [x] (.log js/console x))))
 
-s
-
 ;; script attribs:
 ;; src
 ;; type  text/javascript, default: application/x-clojurescript
@@ -20,27 +18,16 @@ s
 
 
 
-(def html-meta
-  #::h{:title "Miraj HTML lib test page"
-       :description "this page demonstrates usage of miraj.html and polymer"
-       :platform {:apple {:mobile-web-app {:capable true
-                                           :status-bar-style :black
-                                           :title :goodbye-str} ;; "Goodbye"
-                          :touch {:icon {:uri "/images/touch/chrome-touch-icon-192x192.png"}}}
-                  :ms {:navbutton-color "#FFCCAA"
-                       :tile-color "#3372DF"
-                       :tile-image "images/ms-touch-icon-144x144-precomposed.png"}
-                  :mobile {:agent {:format :html5
-                                   :url "http://example.org/"}
-                           :web-app-capable true}}})
-
-(h/map->metas html-meta)
 
 ;;  polymer property binding
 
-(codom/serialize (h/div {:foo :bar} "hello"))
+(codom/serialize
+ (h/div {:foo :x/bar} "hello"))
 
-(codom/serialize (h/div {:foo :bar} :msg))
+(codom/serialize (let [bar "BAR"]
+                   (h/div {:foo bar} :msg)))
+
+(let [foo {:val 99 :binding 2}]
 
 (codom/serialize
  (h/div {:foo ::h/bar})
@@ -48,7 +35,7 @@ s
 
 ;; attribute binding
 (codom/serialize
- (h/div {'@foo :bar})
+ (h/div {:foo :&bar})
 )
 
 ;; using clojure binding notation:

@@ -2,13 +2,29 @@
 
 (require '[clojure.spec :as s]
          '[clojure.string :as str]
-         '[miraj.co-dom :as codom :refer [element]])
+         '[miraj.co-dom :as codom :refer [element co-dom-node?]]
+         ;; '[miraj.html.x.ms :as ms]
+         '[clojure.tools.logging :as log :only [trace debug info warn error]])
+
+;; https://www.quotes.uk.com/web-design/meta-tags.php
 
 (def xform-registry (atom {}))
 
 (defn register-xform [k f]
   ;; (log/debug (format "REGISTER XFORM %s" k))
   (swap! xform-registry assoc k f))
+
+(defn ->link
+  [rel args-map]
+  ;; (log/debug "LINK:" rel args-map)
+  (let [attribs (if (string? args-map)
+                  {:rel "stylesheet" :href args-map}
+                  (if (map? (first args-map))
+                    (apply merge {:rel (clojure.core/name rel)} args-map)))
+        ;; _ (log/debug (format "ATTRS %s" attribs))
+        elt (element :link attribs)]
+    ;; (log/debug "Link:" elt)
+    elt))
 
 (defn ->meta
   [tag content]
@@ -39,8 +55,9 @@
 (s/def ::application-name string?)
 (register-xform ::application-name ->meta)
 
-(s/def ::author string?)
-(register-xform ::author ->meta)
+;; see author link-type below
+;; (s/def ::author string?)
+;; (register-xform ::author ->meta)
 
 (s/def ::description string?)
 (register-xform ::description ->meta)
@@ -49,6 +66,30 @@
 (register-xform ::generator ->meta)
 
 (s/def ::keywords ::tokens?)
+
+;; http://www.metatags.org/all_metatags
+
+;; <meta name="rating" content="safe for kids">
+;; general
+;; mature
+;; restricted
+;; 14 years
+;; safe for kids
+
+;; <meta name="no-email-collection" content="link or terms">
+
+;; Google
+;; Meta tags that Google understands: https://support.google.com/webmasters/answer/79812?hl=en
+;; https://webmasters.googleblog.com/2007/03/using-robots-meta-tag.html
+;; https://developers.google.com/webmasters/control-crawl-index/docs/robots_meta_tag
+;; <meta name="google" content="nositelinkssearchbox" />
+;; <meta name="google" content="notranslate" />
+;; <meta name="google-site-verification" content="..." />
+;; <meta name="robots" content="noindex, nofollow">
+;; <meta name="googlebot" content="noindex,nofollow"/>
+;; robots content values: all (default), noindex, nofollow, noarchive,
+;;          nosnippet, noodp, notranslate, noimageindex, unavailable_after: [RFC-850 date/time]
+;;          none (= noindex, nofollow)
 
 ;; viewport: https://drafts.csswg.org/css-device-adapt/#viewport-meta
 ;; (s/def ::device-width (fn [x] (= x :device-width)))
@@ -89,7 +130,7 @@
 (register-xform ::viewport (fn [k v]
                              ;;(log/debug (format "VIEWPORT %s %s" k (seq v)))
                              (element :meta {:content (str/join ", " v)
-                                               :name "viewport"})))
+                                             :name "viewport"})))
 
 
 ;; html5-pseudo-meta-attribs
@@ -98,31 +139,97 @@
 
 (s/def ::base string?)
 
-#_(def html5-link-meta
-  ;; link elements treated as meta-data
- {:icon ^:compound {:uri :uri :sizes :sizes}
-  :manifest :uri})
-
-;; link rel="icon": https://www.w3.org/TR/html5/links.html#rel-icon
- ;; <link rel=icon href=favicon.png sizes="16x16" type="image/png">
- ;;  <link rel=icon href=windows.ico sizes="32x32 48x48" type="image/vnd.microsoft.icon">
- ;;  <link rel=icon href=mac.icns sizes="128x128 512x512 8192x8192 32768x32768">
- ;;  <link rel=icon href=iphone.png sizes="57x57" type="image/png">
- ;;  <link rel=icon href=gnome.svg sizes="any" type="image/svg+xml">
-
 (s/def ::href string?)
-(register-xform ::href (fn [k v] {:href (str v)}))
+(register-xform ::href (fn [k v]
+                         {:href v}))
 
+(s/def ::name string?)
+(register-xform ::name (fn [k v] {:name (str v)}))
+
+(s/def ::type string?)
+(register-xform ::type (fn [k v] {:type (str v)}))
+
+(s/def ::hreflang string?)
+(register-xform ::hreflang (fn [k v] {:hreflang (str v)}))
+
+(s/def ::cross-origin (fn [x] (contains? #{:anonymous :use-credentials} x)))
+(register-xform ::cross-origin (fn [k v] {:cross-origin (clojure.core/name v)}))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;
+;;  LINK elements
+;;
+
+(s/def ::media string?)
+(register-xform ::media (fn [k v] {:media v}))
+
+(s/def ::referrerpolicy string?)
+(register-xform ::referrerpolicy (fn [k v] {:referrerpolicy v}))
+
+;; catch-all
+;; https://gist.github.com/kevinSuttle/1997924
+(s/def ::rel string?)
+(s/def ::content string?)
+(s/def ::link (s/keys :req [::rel] :opt [::content ::title]))
+(s/def ::links (s/coll-of ::link :kind vector?))
+(register-xform ::links (fn [k links]
+                          ;; (log/debug (format "LINKS %s" links))
+                          (for [link links]
+                            (let [;; _ (log/debug (format "LINK %s" (seq link)))
+                                  m (for [l link]
+                                      (do ;;(log/debug "FOO:" l)
+                                            (if (co-dom-node? l)
+                                              {::title (:content l)}
+                                              l)))
+                                  m (into {} m)
+                                  ;; _ (log/debug (format "M %s" (seq m)))
+                                  m (merge {:rel (::rel m)}
+                                           (dissoc (if (::title m)
+                                                     (dissoc (assoc m :title (::title m)) ::title)
+                                                     m)
+                                                   ::rel))]
+                              ;; (log/debug (format "M2 %s" m))
+                              (do ;; (log/debug (format "LINK %s" m))
+                                (element :link m))))))
+
+;; https://www.w3.org/TR/html5/links.html
+;; ALTERNATE https://www.w3.org/TR/html5/links.html#rel-alternate
+;; see also stylesheet
+(s/def ::alternate (s/keys :req [::href] :opt [::type ::hreflang]))
+(register-xform ::alternate (fn [k v]
+                              (log/debug "ALTERNATE:" k v)
+                              (element :link (apply merge {:rel "alternate"}
+                                                    v))))
+
+;; AUTHOR - we combine meta and link
+;; https://dev.w3.org/html5/spec-preview/the-meta-element.html#standard-metadata-names
+;; https://www.w3.org/TR/html5/links.html#link-type-author
+(s/def ::author (s/keys :opt [::name ::href]))
+(register-xform ::author (fn [k v]
+                           (let [attrs (apply merge v)]
+                             ;;(log/debug (format "AUTHOR %s" attrs))
+                             (list
+                              (if (:href attrs)
+                                (element :link {:rel "author"
+                                                :href (:href attrs)}))
+                              (if (:name attrs)
+                                (element :meta {:name "author" :content (str (:name attrs))}))))))
+
+;; HELP  https://www.w3.org/TR/html5/links.html#link-type-help
+(s/def ::help (s/keys :req [::href]))
+(register-xform ::help ->link)
+
+;; ICON  https://www.w3.org/TR/html5/links.html#rel-icon
 (s/def ::size (s/cat :w number? :h number?))
 (register-xform ::size (fn [k v] ;;(log/debug (format "SIZE %s %s" k v))
                          ))
 
-(s/def ::sizes (s/coll-of ::size :kind set?))
-(register-xform ::sizes (fn [k v] ;; (log/debug (format "SIZES %s %s" k v))
-                          {:sizes (str/join " " (for [[w h] v] (str w "x" h)))}))
-
-(s/def ::type string?)
-(register-xform ::type (fn [k v] {:type (str v)}))
+(s/def ::sizes (s/or :v (s/coll-of ::size :kind vector?) :f (fn [x] (= :any x))))
+(register-xform ::sizes (fn [k v]
+                          ;; (log/debug (format "SIZES %s %s" k v))
+                          (if (= :any v)
+                            {:sizes "any"}
+                            {:sizes (str/join " " (for [[w h] v] (str w "x" h)))})))
 
 (s/def ::icon (s/keys :req [::href]
                       :opt [::sizes ::type]))
@@ -135,17 +242,102 @@
                               (element :link (merge {:rel "icon"}
                                                       (into {} icon)))))))
 
+;; LICENSE https://www.w3.org/TR/html5/links.html#link-type-license
+;; (s/def ::license (fn [x] (or (string? x) (and (map? x) (contains? #{::href} (keys x))))))
+(s/def ::license (fn [x] (or (string? x)
+                             (and (map? x) (every? #(contains? #{::href ::type} %) (keys x))))))
+(register-xform ::license (fn [k v]
+                            ;;(log/debug (format "LICENSE %s" (seq v)))
+                            (element :link (apply merge {:rel "licence"}
+                                                  (if (string? v)
+                                                    {:href v}
+                                                    v)))))
 
+;; PREFETCH https://www.w3.org/TR/html5/links.html#link-type-prefetch
+;;(s/def ::prefetch (s/keys :req [::name ::href]))
+(s/def ::prefetch (fn [x] (or (string? x)
+                              (and (map? x) (every? #(contains? #{::href ::type} %) (keys x))))))
+(register-xform ::prefetch (fn [k v]
+                            ;;(log/debug (format "PREFETCH %s" (seq v)))
+                            (element :link (apply merge {:rel "prefetch"}
+                                                  (if (string? v)
+                                                    {:href v}
+                                                    v)))))
 
-#_(def html5-miraj-meta-attribs
-  {:platform (merge apple-meta-tags ms-meta-tags mobile-meta-tags)})
+;; SEARCH https://www.w3.org/TR/html5/links.html#link-type-search
+;; (s/def ::search (s/keys :req [::name ::href]))
+(s/def ::search (fn [x] (or (string? x) (and (map? x) (every? #(contains? #{::href ::type} %) (keys x))))))
+(register-xform ::search (fn [k v]
+                            ;;(log/debug (format "SEARCH %s" (seq v)))
+                            (element :link (apply merge {:rel "search"}
+                                                  (if (string? v)
+                                                    {:href v}
+                                                    v)))))
 
+;; STYLESHEET(S)  https://www.w3.org/TR/html5/links.html#link-type-stylesheet
+(s/def ::label string?)
+(register-xform ::label (fn [k v] {:title v}))
 
-;; (def mobile-meta-tags
-;;   {:mobile {:agent ^:compound {:format #{:wml :xhtml :html5}
-;;                                :url :_}
-;;             :web-app {:capability :fullscreen}}})
+(s/def ::stylesheet (s/keys :req [::href] :opt [::cross-origin]))
+(register-xform ::stylesheet (fn [k v]
+                               (log/debug (format "STYLESHEET %s %s" k v))
+                               {k v}))
 
+(s/def ::persistent (s/coll-of ::stylesheet))
+(register-xform ::persistent (fn [k v]
+                               ;; (log/debug (format "PERSISTENT %s %s" k (seq v)))
+                               (for [ss v]
+                                 (do
+                                 ;; (log/debug (format "SS %s" (seq ss)))
+                                 (element :link (apply merge {:rel "stylesheet"}
+                                                       ss))))))
+
+(s/def ::preferred (s/keys :req [::label ::href] :opt [::cross-origin]))
+(register-xform ::preferred (fn [k v]
+                              (let [attrs (apply merge v)
+                                    ;; _ (log/debug (format "PREFERRED %s %s" k attrs))
+                                    attribs (merge {:rel "stylesheet"} attrs)
+                                    ;; _ (log/debug (format "PATRS %s" attribs))
+                                    ]
+                                (element :link attribs))))
+
+;; (defn alt? [x] (and (map? x)
+;;                     (every? #(contains? #{::href ::title} %) (keys x))))
+(s/def ::alt-ss (s/keys :req [::href ::title]))
+                       ;; (fn [x] (every? #(contains? #{::href ::title} %) (keys x)))))
+(s/def ::alternates (s/coll-of ::alt-ss :kind vector? :distinct true))
+(register-xform ::alternates (fn [k v]
+                               ;; (log/debug (format "ALTERNATES %s %s" k v))
+                               (for [ss v]
+                                 (let [m (into {} ss)
+                                       _ (log/debug (format "SS %s" m))
+                                       m (dissoc m ::rel :attrs :tag)]
+                                       (element :link (merge {:rel "alternate stylesheet"
+                                                       :href (:href m)
+                                                       ;; ::title has already been converted to an Element
+                                                       :title (:content m)}
+                                                             m))))))
+
+(s/def ::stylesheets (s/keys :opt [::persistent ::preferred ::alternates]))
+(register-xform ::stylesheets (fn [k v]
+                                (log/debug (format "STYLESHEETS %s" (seq v)))
+                                v))
+                                ;; (element :link {:rel "stylesheet"})))
+
+;; PAGINATION  https://www.w3.org/TR/html5/links.html#sequential-link-types
+(s/def ::prev string?)
+(register-xform ::prev (fn [k v] {:prev v}))
+
+(s/def ::next string?)
+(register-xform ::next (fn [k v] {:next v}))
+
+(s/def ::pagination (s/keys :opt [::prev ::next]))
+(register-xform ::pagination (fn [k v]
+                               (for [m v]
+                                 (if (:prev m)
+                                   (element :link {:rel "prev" :content (:prev m)})
+                                   (if (:next m)
+                                     (element :link {:rel "next" :content (:next m)}))))))
 
 (s/def ::content-security-policy string?)
 (register-xform ::content-security-policy (fn [k v] {:Content-Security-Policy v}))
@@ -174,9 +366,28 @@
 
 (s/def ::uri uri?)
 
-(s/def ::web-app-capable (fn [x] (instance? Boolean x)))
 
-(s/def ::status-bar-style (fn [x] (contains? #{:default :black :black-translucent} x)))
+;; mobile
+;; <meta name="HandheldFriendly" content="true"/>
+;; <meta name="MobileOptimized" content="320"/>  (windows proprietary?)
+
+;; (s/def ::status-bar-style (fn [x]
+;;                             (contains? #{:default :black :black-translucent} x)))
+
+;; (register-xform ::status-bar-style (fn [k v] {k (clojure.core/name v)}))
+
+;; (s/def ::mobile (s/and (s/keys :opt [::status-bar-style ::title])
+;;                        (fn [x] (every? #(contains? #{::status-bar-style ::title} %) (keys x)))))
+;; (register-xform ::mobile (fn [k v]
+;;                            (log/debug (format "MOBILE %s" (seq v)))
+;;                            (let [mob (for [elt v]
+;;                                        (do (log/debug "MOBELT:" elt (co-dom-node? elt))
+;;                                            (if (co-dom-node? elt)
+;;                                              {::title (first (:content elt))}
+;;                                              elt)))
+;;                                  res {::mobile (into {::web-app-capable "yes"} mob)}]
+;;                              (log/debug (format "MOBILE RES %s" (seq res)))
+;;                              res)))
 
 (s/def ::telephone-number-detection (fn [x] (= :disable)))
 
@@ -184,50 +395,35 @@
 
 (s/def ::itunes-app (s/keys :opt [::app ::affiliate-data]))
 
-(s/def ::mobile-web-app (s/keys :opt [::status-bar-style ::title]))
+;; chrome
+;; <meta name="mobile-web-app-capable" content="yes">
+;; <link rel="shortcut icon" sizes="196x196" href="icon-196.png">
+;; (s/def ::mobile-web-app (s/keys :opt [::status-bar-style ::title]))
 
-(s/def ::touch (s/keys :req [::foo] :opt [::icon ::startup-image]))
 
-(s/def ::apple (s/keys :opt [::format-detection
-                                   ::itunes-app
-                                   ::mobile-web-app
-                                   ::touch]))
+;; android?
+;; <link rel="apple-touch-icon-precomposed" href="/static/images/identity/HTML5_Badge_64.png" />
 
-(s/def ::platform (s/keys :opt [::apple ::ms]))
+
+;; (def mobile-meta-tags
+;;   {:mobile {:agent ^:compound {:format #{:wml :xhtml :html5}
+;;                                :url :_}
+;;             :web-app {:capability :fullscreen}}})
+
+(s/def ::platform (s/keys :opt [::apple ::mobile ::ms]))
+ ;; (fn [x]
+ ;;                    ;; (log/debug (format "PLATFORM pred" ))
+ ;;                    (and (map? x) (every? #(contains? #{::apple ::mobile ::ns} %) (keys x)))))
+
+(register-xform ::platform (fn [k v]
+                             (log/debug (format "PLATFORM %s" (seq v)))
+                             v))
 
 (s/def ::meta (s/keys :opt [::title ::description ::platform]))
 (register-xform ::meta (fn [k v] v))
 
 
 ;; https://developer.apple.com/library/content/documentation/AppleApplications/Reference/SafariWebContent/PromotingAppswithAppBanners/PromotingAppswithAppBanners.html
-
-#_(def ms-meta-tags
-  {:ms {:config :uri
-        :navbutton-color :color
-        :notification {:?frequency #{30 60 360 720 1440}
-                       :?cycle #{0 1 2 3 4 5 6 7}
-                       :uri :uri
-                       :?uris [:uri] ;; up to 5 total
-                       }
-        :square-70x70-logo :uri
-        :square-150x150-logo :uri
-        :square-310x310-logo :uri
-        :starturl :uri
-        :task {:name :string :action-uri :uri :icon-uri :uri
-               :window-type #{:tab :self :window}}
-        :tile-color :color
-        :tile-image :uri
-        :tooltip :string
-        :tap-highlight :no
-        :wide-310x150-logo :uri
-        :window {:width :pixels, :height :pixels}
-        ;; other ms metas https://msdn.microsoft.com/library/dn255024(v=vs.85).aspx
-        :ms-pinned ^:nonstandard {:allow-domain-api-calls :bool
-                                  :allow-domain-meta-tags :bool
-                                  :badge {:frequency #{30 60 360 720 1440}
-                                          :polling-uri :uri}
-                                  :start-url :uri
-                                  :task-separator :_}}})
 
 #_(def twitter-meta-tags
   )
