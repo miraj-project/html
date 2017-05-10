@@ -1,9 +1,8 @@
 (in-ns 'miraj.html)
 
-(require '[clojure.spec :as s]
+(require '[clojure.spec.alpha :as s]
          '[clojure.string :as str]
          '[miraj.co-dom :as codom :refer [element co-dom-node?]]
-         ;; '[miraj.html.x.ms :as ms]
          '[clojure.tools.logging :as log :only [trace debug info warn error]])
 
 ;; https://www.quotes.uk.com/web-design/meta-tags.php
@@ -224,7 +223,7 @@
 (register-xform ::size (fn [k v] ;;(log/debug (format "SIZE %s %s" k v))
                          ))
 
-(s/def ::sizes (s/or :v (s/coll-of ::size :kind vector?) :f (fn [x] (= :any x))))
+(s/def ::sizes (s/or :v (s/coll-of ::size :kind set?) :f (fn [x] (= :any x))))
 (register-xform ::sizes (fn [k v]
                           ;; (log/debug (format "SIZES %s %s" k v))
                           (if (= :any v)
@@ -358,9 +357,9 @@
 (s/def ::pragma (s/keys :opt [::content-security-policy ::default-style ::refresh
                               ::pics-label]))
 (register-xform ::pragma (fn [k v]
-                           (log/debug (format "PRAGMA %s" (into {} v)))
+                           ;; (log/debug (format "PRAGMA %s" (into {} v)))
                            (for [[k v] (into {} v)]
-                             (do (log/debug (format "Pragma %s %s" k v))
+                             (do ;; (log/debug (format "Pragma %s %s" k v))
                                  (element :meta {:http-equiv (clojure.core/name k)
                                                    :content v})))))
 

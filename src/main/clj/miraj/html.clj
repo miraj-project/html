@@ -1,11 +1,10 @@
 (ns miraj.html
   (:refer-clojure :exclude [map meta time]) ;; apply fn
-  (:require [clojure.spec   :as spec]
+  (:require [clojure.spec.alpha   :as spec]
             [clojure.string :as str]
             [clojure.walk   :as walk]
             [clojure.tools.logging :as log :only [trace debug info warn error]]
-            [miraj.co-dom :as codom]
-            [miraj.html.x.ms :as ms]))
+            [miraj.co-dom :as codom]))
 
 (alter-meta! *ns* (fn [m] (assoc m :miraj/miraj {:miraj/elements true
                                                  :miraj/nss '[]
@@ -17,10 +16,10 @@
                                                    ]
                                                    :miraj/base ""}})))
 
-(println "loading html_impl")
+;; (println "loading html_impl")
 (load "html_impl")
 
-(println "loading html_spec")
+;; (println "loading html_spec")
 (load "html_spec")
 
 ;;;;;;;; COMPONENT: miraj.html/script ;;;;;;;;;;;;;;;;
@@ -43,11 +42,11 @@
   ;; (log/info (format "NS %s" *ns*))
   (let [attrs (filter map? args)
         ;; _ (log/info "ATTRS:" attrs (empty? attrs))
-        script-type (if (nil? (:type attrs))
-                      ;; {:type "application/x-clojurescript"}
-                      {:type "text/javascript"}
-                      {:type (:text attrs)})
-        attribs (into {} (merge attrs script-type))
+        ;; script-type (if (nil? (:type attrs))
+        ;;               ;; {:type "application/x-clojurescript"}
+        ;;               {:type "text/javascript"}
+        ;;               {:type (:text attrs)})
+        attribs (into {} attrs) ;; (merge attrs script-type))
         ;; _ (log/info "ARGS:" args)
         content (if (empty? attrs)
                   args
@@ -130,7 +129,7 @@
   "Convert clojure map to sequence of HTML meta elements."
   {:added "5.1.0"}
   [html-tags]
-  (log/debug (format "META-MAP->ELTS %s" html-tags))
+  ;; (log/debug (format "META-MAP->ELTS %s" html-tags))
   ;; (log/debug (format "XFORM registry %s" @xform-registry))
   #_(log/debug (format "PREWALK %s" (with-out-str
                                     (walk/prewalk-demo html-tags))))
