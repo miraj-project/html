@@ -16,10 +16,10 @@
 ;; crossOrigin
 ;; text
 
-
-
-
 ;;  polymer property binding
+
+(codom/serialize
+ (h/div {:foo "bar"} "hello"))
 
 (codom/serialize
  (h/div {:foo :x/bar} "hello"))
@@ -27,7 +27,24 @@
 (codom/serialize (let [bar "BAR"]
                    (h/div {:foo bar} :msg)))
 
-(let [foo {:val 99 :binding 2}]
+(def x
+    (h/span {:foo 99
+             :$background-color "#FFECB3"
+             ;; :$before {:content "BEFORE_ "}
+             ;;:$first-letter {:background-color "red"}
+             ;; :$after {:content " _ AFTER"}
+             :$hover {:background-color "#C5CAE9!important"}
+             } "HELLO WORLD"))
+
+(str
+ (codom/serialize x)
+ (codom/serialize (-> x meta :miraj/pseudo)))
+
+(let [frag (h/div x (-> x meta :miraj/pseudo))]
+  frag)
+  (codom/serialize frag))
+
+(codom/serialize x)
 
 (codom/serialize
  (h/div {:foo ::h/bar})
