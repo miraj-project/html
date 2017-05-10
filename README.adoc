@@ -36,6 +36,9 @@ It's functions all the way down, so you can compose to your heart's content.
 With miraj.html you can express HTML metadata (i.e. <meta> and <link>
 elements in <head>) as a clojure map.
 
+refs:  https://gist.github.com/kevinSuttle/1997924
+
+
 For example:
 
 [source,clojure]
