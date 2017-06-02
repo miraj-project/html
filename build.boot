@@ -10,15 +10,16 @@
 
  :repositories #(conj % ["clojars" {:url "https://clojars.org/repo/"}])
 
- :checkouts '[[miraj/co-dom                  "1.0.0-SNAPSHOT"]
+ ;; :checkouts '[[miraj/co-dom                  "1.0.0-SNAPSHOT"]
 ;;              [miraj/core                    "0.1.0-SNAPSHOT"]
-              ]
+              ;; ]
 
- :dependencies '[[miraj/co-dom               "1.0.0-SNAPSHOT"]
+ :dependencies '[[org.clojure/clojure  "1.9.0-alpha17"]
+                 [miraj/co-dom               "1.0.0-SNAPSHOT"]
 
                  ;; test
 
-                 [miraj/polymer               "1.2.3-SNAPSHOT" :scope "test"]
+                 ;; [miraj/polymer               "1.2.3-SNAPSHOT" :scope "test"]
                  ;; [miraj/core                 "0.1.0-SNAPSHOT"]
 
                  ;; [miraj/polymer "1.2.3-SNAPSHOT"]
@@ -39,20 +40,21 @@
                  [clj-logging-config "1.9.7"]
 
                  [miraj/boot-miraj           "0.1.0-SNAPSHOT" :scope "test"]
-                 [adzerk/boot-reload "0.5.1" :scope "test"]
+                 ;; [adzerk/boot-reload "0.5.1" :scope "test"]
                  [pandeiro/boot-http "0.7.3"           :scope "test"]
                  ;; [crisptrutski/boot-cljs-test "0.2.2-SNAPSHOT"  :scope "test"]
                  ;; [com.cemerick/piggieback "0.2.1"  :scope "test"]
                  ;; [mount "0.1.10" :scope "test"]
                  ;; [weasel "0.7.0"  :scope "test"]
-                 [samestep/boot-refresh "0.1.0"]
-                 [adzerk/boot-test "1.2.0" :scope "test"]])
+                 ;; [samestep/boot-refresh "0.1.0" :scope "test"]
+                 ;; [adzerk/boot-test "1.2.0" :scope "test"]
+                 ])
 
 (require '[miraj.boot-miraj :as miraj]
-         '[samestep.boot-refresh :refer [refresh]]
-         '[adzerk.boot-reload :refer [reload]]
-         '[pandeiro.boot-http :as http :refer :all]
-         '[adzerk.boot-test :refer [test]])
+         ;; '[samestep.boot-refresh :refer [refresh]]
+         ;; '[adzerk.boot-reload :refer [reload]]
+         '[pandeiro.boot-http :as http :refer :all])
+         ;; '[adzerk.boot-test :refer [test]])
 
 (task-options!
  repl {:port 8080}
@@ -62,7 +64,8 @@
       :url         "https://github.com/miraj-project/html"
       :scm         {:url "https://github.com/miraj-project/html.git"}
       :license     {"EPL" "http://www.eclipse.org/legal/epl-v10.html"}}
- jar {:manifest {"root" "miraj"}})
+ jar {:manifest {"root" "miraj"}}
+ push {:repo "clojars"})
 
 (deftask build
   "build a component library"
@@ -73,6 +76,15 @@
         (jar)
         (target)
         (install)))
+
+(deftask deploy
+  "deploy to clojars"
+  []
+  (comp (miraj/compile :libraries true :debug true)
+        ;; (miraj/compile :styles    true :debug true :keep true)
+        (pom)
+        (jar)
+        (push)))
 
 (deftask dev
   "watch etc. for dev using checkout"
@@ -133,7 +145,7 @@
    ;;(refresh)
    ;; (miraj.boot-miraj/compile :keep true :debug true :pages true)
    ;; (miraj.boot-miraj/link    :debug true :pages true)
-   (reload) ;; this is not for dev
+   ;; (reload) ;; this is not for dev
    ;; (target) ;; :no-clean true)
    ;; (cljs)
    (target :no-clean true)
