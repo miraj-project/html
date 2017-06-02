@@ -1,4 +1,4 @@
-(ns miraj.html.protocol
+(ns miraj.html.protocols
   (:refer-clojure :exclude [list load meta]))
 
 ;; HTML5 Event protocols
