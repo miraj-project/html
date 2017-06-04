@@ -70,12 +70,8 @@
 (deftask build
   "build a component library"
   []
-  (comp (miraj/compile :libraries true :debug true)
+  (comp (miraj/compile :libraries true :debug true)))
         ;; (miraj/compile :styles    true :debug true :keep true)
-        (pom)
-        (jar)
-        (target)
-        (install)))
 
 (deftask deploy
   "deploy to clojars"
@@ -84,6 +80,7 @@
         ;; (miraj/compile :styles    true :debug true :keep true)
         (pom)
         (jar)
+        (target)
         (push)))
 
 (deftask dev
