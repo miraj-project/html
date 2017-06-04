@@ -1,6 +1,6 @@
 (ns miraj.html.x.ms
   "Namespace for specking Microsoft HTML meta tags"
-  (:require [clojure.spec :as s]
+  (:require [clojure.spec.alpha :as s]
             [clojure.string :as str]
             [miraj.html :as h]
             [miraj.co-dom :as codom :refer [element co-dom-node?]]
@@ -20,7 +20,7 @@
 (h/register-xform ::allow-domain (fn [k v]
                                    ;; (log/debug (format "ALLOW-DOMAIN %s" (seq v)))
                                    (let [elts (for [kw v]
-                                                (do (log/debug (format "ELT %s" kw))
+                                                (do ;; (log/debug (format "ELT %s" kw))
                                                     (if (= ::api-calls kw)
                                                       (element :meta
                                                                {:name "msapplication-allowDomainApiCalls"
@@ -44,7 +44,7 @@
 ;;       content="frequency=30; polling-uri=http://example.com/id45453245/polling.xml">
 (h/register-xform ::badge (fn [k v]
                             (let [m (into {} v)]
-                            (log/debug (format "BADGE %s" (seq m)))
+                            ;; (log/debug (format "BADGE %s" (seq m)))
                             (let [freq (or (::frequency m) 1440)
                                   uri (::polling-uri m)]
                             (element :meta {:name "msapplication-badge"
@@ -77,7 +77,7 @@
                           freq (or (::frequency m) 1440)
                           uris (::polling-uris m)
                           cycle (or (::cycle m) nil)]
-                      (log/debug (format "NOTIFICATION %s" m))
+                      ;; (log/debug (format "NOTIFICATION %s" m))
                       (element :meta {:name "msapplication-notification"
                                       :content (str "frequency=" freq ";"
                                                     (if cycle (str "cycle=" cycle ";"))
@@ -144,7 +144,7 @@
                                      (keys x)))))
 (s/def ::tasks (s/coll-of ::task :kind vector?))
 (h/register-xform ::tasks (fn [k v]
-                            (log/debug (format "TASKs %s" (seq v)))
+                            ;; (log/debug (format "TASKs %s" (seq v)))
                             (for [task v]
                               ;;(do (log/debug (format "TASK %s" (seq task)))
                               (let [task (into {} task)
@@ -177,7 +177,7 @@
                      (fn [x] (every? #(contains? #{::color ::image} %) (keys x)))))
 (h/register-xform ::tile (fn [k v]
                            (let [m (into {} v)
-                                 _ (log/debug (format "TILE %s" m))
+                                 ;; _ (log/debug (format "TILE %s" m))
                                  elts (if (::color m)
                                         (element :meta {:name "msapplication-TileColor"
                                                         :content (::color m)}))
@@ -200,7 +200,7 @@
                        (fn [x] (every? #(contains? #{::w ::h} %) (keys x)))))
 (h/register-xform ::window (fn [k v]
                              (let [m (into {} v)]
-                             (log/debug (format "WINDOW %s" m))
+                             ;; (log/debug (format "WINDOW %s" m))
                              (element :meta {:name "msapplication-window"
                                              :content (str "width=" (::w m) ";"
                                                            "height=" (::h m))}))))

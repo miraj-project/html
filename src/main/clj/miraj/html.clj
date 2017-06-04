@@ -16,6 +16,8 @@
                                                    ]
                                                    :miraj/base ""}})))
 
+;; (println "loading miraj.html")
+
 ;; (println "loading html_impl")
 (load "html_impl")
 
@@ -158,3 +160,5 @@
                                 ;;        [x]))
                                 x))
                    html-tags))))
+
+;;(println "loaded miraj.html")

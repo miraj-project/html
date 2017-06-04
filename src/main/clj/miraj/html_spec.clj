@@ -415,7 +415,7 @@
  ;;                    (and (map? x) (every? #(contains? #{::apple ::mobile ::ns} %) (keys x)))))
 
 (register-xform ::platform (fn [k v]
-                             (log/debug (format "PLATFORM %s" (seq v)))
+                             ;; (log/debug (format "PLATFORM %s" (seq v)))
                              v))
 
 (s/def ::meta (s/keys :opt [::title ::description ::platform]))

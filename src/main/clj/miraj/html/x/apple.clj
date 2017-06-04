@@ -1,6 +1,6 @@
 (ns miraj.html.x.apple
   "Namespace for specking Apple HTML meta tags"
-  (:require [clojure.spec :as s]
+  (:require [clojure.spec.alpha :as s]
             [miraj.html :as h]
             [miraj.co-dom :as codom :refer [element co-dom-node?]]
             [clojure.tools.logging :as log :only [trace debug info warn error]]))
@@ -29,24 +29,24 @@
                         (every? #(contains? #{::h/icons ::startup-image} %) (keys x)))))
 
 (h/register-xform ::touch (fn [k v]
-                          (log/debug (format "TOUCH %s" (seq v)))
+                          ;; (log/debug (format "TOUCH %s" (seq v)))
                           (let [maps (filter codom/attr-map? v)
-                                _ (log/debug (format "MAPS %s" (seq maps)))
+                                ;; _ (log/debug (format "MAPS %s" (seq maps)))
                                 elts (filter #(not (codom/attr-map? %)) v)
-                                _ (log/debug (format "TOUCH ELTS %s" elts))
+                                ;; _ (log/debug (format "TOUCH ELTS %s" elts))
                                 icons (into [] (for [elt (first elts)]
-                                                 (do (log/debug "T ELT:" elt (co-dom-node? elt))
+                                                 (do ;; (log/debug "T ELT:" elt (co-dom-node? elt))
                                                      (if (and (co-dom-node? elt)
                                                               (= "icon" (-> elt :attrs :rel)))
                                                        (merge (:attrs elt)
                                                               {:rel "touch-icon"})
                                                        elt))))
-                                _ (log/debug (format "ICONS %s" icons))
+                                ;; _ (log/debug (format "ICONS %s" icons))
                                 res (apply merge {::icons icons} maps)
-                                _ (log/debug (format "TOUCH result %s" res))
+                                ;; _ (log/debug (format "TOUCH result %s" res))
 
                                 touch-elts (for [[k v] res]
-                                             (do (log/debug (format "Touch ELT %s %s" k v))
+                                             (do ;; (log/debug (format "Touch ELT %s %s" k v))
                                                  (if (= ::icons k)
                                                    (for [icon v]
                                                      (element :link (merge
@@ -56,7 +56,7 @@
                                                      (element :link {:rel "apple-touch-startup-image"
                                                                      :href v})))))
                                 ]
-                            (log/debug (format "TOUCH ELTS %s" touch-elts))
+                            ;; (log/debug (format "TOUCH ELTS %s" touch-elts))
                              touch-elts)))
 
 (s/def ::status-bar-style (fn [x]
@@ -71,16 +71,16 @@
                        (fn [x] (every? #(contains? #{::status-bar-style ::title} %) (keys x)))))
 
 (h/register-xform ::mobile (fn [k v]
-                           (log/debug (format "MOBILE %s" (seq v)))
+                           ;; (log/debug (format "MOBILE %s" (seq v)))
                            (let [mob (for [elt v]
-                                       (do (log/debug "MOB ELT:" elt (co-dom-node? elt))
+                                       (do ;; (log/debug "MOB ELT:" elt (co-dom-node? elt))
                                            (if (co-dom-node? elt)
                                              {::title (first (:content elt))}
                                              elt)))
                                  res (into {::web-app-capable "yes"} mob)
-                                 _ (log/debug (format "MOBILE RES %s" res))
+                                 ;; _ (log/debug (format "MOBILE RES %s" res))
                                  result (for [[k v] res]
-                                          (do (log/debug (format "mELT %s %s" k v))
+                                          (do ;; (log/debug (format "mELT %s %s" k v))
                                               (if (= ::title k)
                                                 (element :meta {:name "apple-mobile-web-app-title"
                                                                 :content v})
@@ -90,7 +90,7 @@
                                                   (if (= ::web-app-capable k)
                                                     (element :meta {:name "apple-mobile-web-app-capable"
                                                                     :content "yes"}))))))]
-                             (log/debug (format "MOBILE Result %s" (seq result)))
+                             ;; (log/debug (format "MOBILE Result %s" (seq result)))
                              result)))
 
 (s/def ::apple (s/and (s/keys :opt [::format-detection ::itunes-app ::mobile ::touch])
@@ -99,12 +99,12 @@
                                        (keys x)))))
 
 (h/register-xform ::apple (fn [k v]
-                          (log/debug (format "APPLE %s" (into {} v)))
+                          ;; (log/debug (format "APPLE %s" (into {} v)))
                           (let [m (into {} v)
                                 mobile (::mobile m)
-                                _ (log/debug (format "MOBILE %s" mobile))
+                                ;; _ (log/debug (format "MOBILE %s" mobile))
                                 mob-elts (for [[k v] mobile]
-                                         (do (log/debug (format "ELT %s %s" k v))
+                                         (do ;; (log/debug (format "ELT %s %s" k v))
                                              (if (= ::title k)
                                                (element :meta {:name "apple-mobile-web-app-title"
                                                                :content v})
@@ -115,9 +115,9 @@
                                                    (element :meta {:name "apple-mobile-web-app-capable"
                                                                    :content "yes"}))))))
                                 touch  (::touch m)
-                                _ (log/debug (format "TOUCH %s" touch))
+                                ;; _ (log/debug (format "TOUCH %s" touch))
                                 touch-elts (for [[k v] touch]
-                                             (do (log/debug (format "Touch ELT %s %s" k v))
+                                             (do ;; (log/debug (format "Touch ELT %s %s" k v))
                                                  (if (= ::icons k)
                                                    (for [icon v]
                                                      (element :link (merge
@@ -126,7 +126,7 @@
                                                    (if (= ::startup-image k)
                                                      (element :link {:rel "apple-touch-startup-image"
                                                                      :href v})))))
-                                _ (log/debug (format "TOUCH ELTS %s" touch-elts))
+                                ;; _ (log/debug (format "TOUCH ELTS %s" touch-elts))
                                 result (concat mob-elts touch-elts)]
-                            (log/debug (format "RES %s" (seq result)))
+                            ;; (log/debug (format "RES %s" (seq result)))
                             result)))
